@@ -1,0 +1,2080 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>내 업무 플래너</title>
+    <meta name="description" content="개인 업무를 등록하고 마감일과 우선순위, 완료 상태를 관리하는 간결하고 안전한 업무 플래너" />
+    <meta property="og:title" content="내 업무 플래너" />
+    <meta property="og:description" content="개인 업무를 등록하고 마감일과 우선순위, 완료 상태를 관리하는 간결하고 안전한 업무 플래너" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <style>
+      /* --- 리셋 & 기본 변수 정의 --- */
+      *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --color-primary: #2563eb;
+        --color-primary-hover: #1d4ed8;
+        --color-primary-light: #eff6ff;
+        --color-primary-border: #93c5fd;
+
+        --color-bg-page: #f8fafc;
+        --color-bg-card: #ffffff;
+        --color-border: #e2e8f0;
+        --color-border-focus: #3b82f6;
+
+        --color-text-main: #0f172a;
+        --color-text-sub: #475569;
+        --color-text-muted: #64748b;
+        --color-text-disabled: #94a3b8;
+
+        /* 우선순위 색상 */
+        --priority-high-bg: #fef2f2;
+        --priority-high-text: #b91c1c;
+        --priority-high-border: #fca5a5;
+
+        --priority-medium-bg: #eff6ff;
+        --priority-medium-text: #1d4ed8;
+        --priority-medium-border: #93c5fd;
+
+        --priority-low-bg: #f1f5f9;
+        --priority-low-text: #475569;
+        --priority-low-border: #cbd5e1;
+
+        /* 상태 뱃지 색상 */
+        --status-overdue-bg: #fef2f2;
+        --status-overdue-text: #b91c1c;
+        --status-overdue-border: #f87171;
+
+        --status-today-bg: #fff7ed;
+        --status-today-text: #c2410c;
+        --status-today-border: #fdba74;
+
+        --status-completed-bg: #f0fdf4;
+        --status-completed-text: #15803d;
+        --status-completed-border: #86efac;
+
+        --status-nodate-bg: #f8fafc;
+        --status-nodate-text: #64748b;
+        --status-nodate-border: #e2e8f0;
+
+        --font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Noto Sans KR", "Segoe UI", Roboto, sans-serif;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+        --radius: 12px;
+      }
+
+      body {
+        font-family: var(--font-family);
+        background-color: var(--color-bg-page);
+        color: var(--color-text-main);
+        line-height: 1.5;
+        min-height: 100vh;
+        padding: 24px 16px 60px 16px;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .app-container {
+        max-width: 840px;
+        margin: 0 auto;
+      }
+
+      /* 헤더 영역 */
+      .app-header {
+        background-color: var(--color-bg-card);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius);
+        padding: 24px 28px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 24px;
+      }
+
+      .header-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .brand-icon {
+        width: 44px;
+        height: 44px;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 700;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+        flex-shrink: 0;
+      }
+
+      .brand-text h1 {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--color-text-main);
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+      }
+
+      .brand-text p {
+        font-size: 13px;
+        color: var(--color-text-sub);
+        margin-top: 2px;
+      }
+
+      /* 저장 상태 공지 배너 */
+      .sync-notice-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background-color: #f1f5f9;
+        color: #475569;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 6px 12px;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+      }
+
+      .sync-notice-pill svg {
+        width: 14px;
+        height: 14px;
+        color: #2563eb;
+        flex-shrink: 0;
+      }
+
+      /* 통계 & 진행률 바 */
+      .stats-bar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 12px;
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid var(--color-border);
+      }
+
+      .stat-card {
+        background-color: var(--color-bg-page);
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        padding: 10px 14px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .stat-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+      }
+
+      .stat-value {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--color-text-main);
+        margin-top: 2px;
+      }
+
+      .stat-card.urgent .stat-value {
+        color: #dc2626;
+      }
+      .stat-card.completed .stat-value {
+        color: #16a34a;
+      }
+
+      .progress-container {
+        margin-top: 16px;
+      }
+
+      .progress-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--color-text-sub);
+        margin-bottom: 6px;
+      }
+
+      .progress-track {
+        height: 8px;
+        background-color: #e2e8f0;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #3b82f6, #2563eb);
+        width: 0%;
+        transition: width 0.3s ease;
+      }
+
+      /* 입력 폼 영역 */
+      .task-form-card {
+        background-color: var(--color-bg-card);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius);
+        padding: 24px 28px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 24px;
+      }
+
+      .form-title {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--color-text-main);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .form-title-badge {
+        font-size: 11px;
+        font-weight: 700;
+        background-color: var(--color-primary-light);
+        color: var(--color-primary);
+        padding: 2px 8px;
+        border-radius: 4px;
+      }
+
+      .input-group {
+        margin-bottom: 16px;
+      }
+
+      .input-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--color-text-main);
+        margin-bottom: 6px;
+      }
+
+      .input-label .required {
+        color: #dc2626;
+        margin-left: 2px;
+      }
+
+      .text-input {
+        width: 100%;
+        height: 46px;
+        padding: 0 16px;
+        font-size: 15px;
+        font-family: inherit;
+        color: var(--color-text-main);
+        background-color: #ffffff;
+        border: 1.5px solid var(--color-border);
+        border-radius: 8px;
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+      }
+
+      .text-input:focus {
+        border-color: var(--color-border-focus);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      }
+
+      .text-input.error {
+        border-color: #dc2626 !important;
+        background-color: #fffafb;
+      }
+
+      /* 유효성 검사 에러 메시지 */
+      .form-error-message {
+        display: none;
+        align-items: center;
+        gap: 6px;
+        margin-top: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #dc2626;
+        animation: fadeIn 0.2s ease;
+      }
+
+      .form-error-message.active {
+        display: flex;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 20px;
+      }
+
+      @media (max-width: 640px) {
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* 우선순위 선택 버튼 그룹 */
+      .priority-options {
+        display: flex;
+        gap: 8px;
+      }
+
+      .priority-option-btn {
+        flex: 1;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1.5px solid var(--color-border);
+        background-color: #ffffff;
+        color: var(--color-text-sub);
+        transition: all 0.15s ease;
+        user-select: none;
+      }
+
+      .priority-option-btn:hover {
+        border-color: #cbd5e1;
+        background-color: #f8fafc;
+      }
+
+      .priority-option-btn .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      /* 우선순위 선택 활성 상태 */
+      .priority-option-btn[data-value="high"].active {
+        background-color: var(--priority-high-bg);
+        color: var(--priority-high-text);
+        border-color: var(--priority-high-border);
+        box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.12);
+      }
+      .priority-option-btn[data-value="high"] .dot {
+        background-color: #dc2626;
+      }
+
+      .priority-option-btn[data-value="medium"].active {
+        background-color: var(--priority-medium-bg);
+        color: var(--priority-medium-text);
+        border-color: var(--priority-medium-border);
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+      }
+      .priority-option-btn[data-value="medium"] .dot {
+        background-color: #2563eb;
+      }
+
+      .priority-option-btn[data-value="low"].active {
+        background-color: var(--priority-low-bg);
+        color: var(--priority-low-text);
+        border-color: var(--priority-low-border);
+        box-shadow: 0 0 0 2px rgba(71, 85, 105, 0.12);
+      }
+      .priority-option-btn[data-value="low"] .dot {
+        background-color: #64748b;
+      }
+
+      /* 날짜 인풋 및 빠른 버튼 */
+      .date-input-wrapper {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .date-input-row {
+        display: flex;
+        gap: 8px;
+      }
+
+      .date-input {
+        flex: 1;
+        height: 44px;
+        padding: 0 12px;
+        font-size: 14px;
+        font-family: inherit;
+        color: var(--color-text-main);
+        background-color: #ffffff;
+        border: 1.5px solid var(--color-border);
+        border-radius: 8px;
+        outline: none;
+      }
+
+      .date-input:focus {
+        border-color: var(--color-border-focus);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+      }
+
+      .btn-clear-date {
+        height: 44px;
+        padding: 0 12px;
+        border: 1px solid var(--color-border);
+        background-color: #ffffff;
+        color: var(--color-text-muted);
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .btn-clear-date:hover {
+        background-color: #f1f5f9;
+        color: var(--color-text-main);
+      }
+
+      .quick-date-chips {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .date-chip {
+        border: 1px solid var(--color-border);
+        background-color: var(--color-bg-page);
+        color: var(--color-text-sub);
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.1s;
+      }
+      .date-chip:hover {
+        background-color: #e2e8f0;
+        color: var(--color-text-main);
+      }
+
+      /* 등록 버튼 */
+      .btn-submit-task {
+        width: 100%;
+        height: 48px;
+        background-color: var(--color-primary);
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: background-color 0.15s, transform 0.05s, box-shadow 0.15s;
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+      }
+
+      .btn-submit-task:hover {
+        background-color: var(--color-primary-hover);
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+      }
+
+      .btn-submit-task:active {
+        transform: translateY(1px);
+      }
+
+      /* 목록 필터 & 도구 모음 */
+      .list-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+      }
+
+      .filter-tabs {
+        display: flex;
+        background-color: #e2e8f0;
+        padding: 4px;
+        border-radius: 10px;
+        gap: 2px;
+        overflow-x: auto;
+      }
+
+      .filter-tab {
+        border: none;
+        background: transparent;
+        color: var(--color-text-sub);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: 7px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .filter-tab.active {
+        background-color: #ffffff;
+        color: var(--color-primary);
+        box-shadow: var(--shadow-sm);
+        font-weight: 700;
+      }
+
+      .tab-count {
+        background-color: rgba(0, 0, 0, 0.06);
+        color: inherit;
+        font-size: 11px;
+        padding: 1px 6px;
+        border-radius: 10px;
+      }
+
+      .filter-tab.active .tab-count {
+        background-color: var(--color-primary-light);
+        color: var(--color-primary);
+      }
+
+      .secondary-controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+
+      .search-input-wrap {
+        position: relative;
+      }
+
+      .search-input {
+        height: 38px;
+        padding: 0 12px 0 32px;
+        font-size: 13px;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        background-color: #ffffff;
+        width: 170px;
+        outline: none;
+        transition: width 0.2s, border-color 0.2s;
+      }
+
+      .search-input:focus {
+        width: 210px;
+        border-color: var(--color-border-focus);
+      }
+
+      .search-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 14px;
+        height: 14px;
+        color: var(--color-text-muted);
+        pointer-events: none;
+      }
+
+      .sort-select {
+        height: 38px;
+        padding: 0 10px;
+        font-size: 13px;
+        font-weight: 500;
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        background-color: #ffffff;
+        color: var(--color-text-main);
+        outline: none;
+        cursor: pointer;
+      }
+
+      /* 업무 목록 영역 */
+      .task-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      /* 업무 카드 아이템 */
+      .task-item {
+        background-color: var(--color-bg-card);
+        border: 1px solid var(--color-border);
+        border-radius: 10px;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        box-shadow: var(--shadow-sm);
+        transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+        animation: fadeIn 0.2s ease;
+      }
+
+      .task-item:hover {
+        border-color: #cbd5e1;
+        box-shadow: var(--shadow-md);
+      }
+
+      .task-item.completed {
+        background-color: #fafbfc;
+        border-color: #e2e8f0;
+      }
+
+      .task-left {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        flex: 1;
+        min-width: 0; /* 말줄임 & 넘침 방지 핵심 */
+      }
+
+      /* 커스텀 체크박스 */
+      .checkbox-wrapper {
+        position: relative;
+        padding-top: 2px;
+        flex-shrink: 0;
+      }
+
+      .custom-checkbox {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 22px;
+        height: 22px;
+        border: 2px solid #cbd5e1;
+        border-radius: 6px;
+        background-color: #ffffff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s ease;
+        outline: none;
+      }
+
+      .custom-checkbox:hover {
+        border-color: var(--color-primary);
+      }
+
+      .custom-checkbox:checked {
+        background-color: var(--color-primary);
+        border-color: var(--color-primary);
+      }
+
+      .custom-checkbox:checked::after {
+        content: "";
+        width: 6px;
+        height: 10px;
+        border: solid #ffffff;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg) translate(-1px, -1px);
+        display: block;
+      }
+
+      .task-content {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .task-title-row {
+        margin-bottom: 6px;
+      }
+
+      .task-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--color-text-main);
+        word-break: break-word;
+        overflow-wrap: break-word;
+        line-height: 1.45;
+      }
+
+      .task-item.completed .task-title {
+        color: var(--color-text-disabled);
+        text-decoration: line-through;
+        font-weight: 500;
+      }
+
+      /* 뱃지 모음 */
+      .task-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 8px;
+        border-radius: 6px;
+        border: 1px solid transparent;
+        white-space: nowrap;
+      }
+
+      .badge-priority-high {
+        background-color: var(--priority-high-bg);
+        color: var(--priority-high-text);
+        border-color: var(--priority-high-border);
+      }
+
+      .badge-priority-medium {
+        background-color: var(--priority-medium-bg);
+        color: var(--priority-medium-text);
+        border-color: var(--priority-medium-border);
+      }
+
+      .badge-priority-low {
+        background-color: var(--priority-low-bg);
+        color: var(--priority-low-text);
+        border-color: var(--priority-low-border);
+      }
+
+      .badge-overdue {
+        background-color: var(--status-overdue-bg);
+        color: var(--status-overdue-text);
+        border-color: var(--status-overdue-border);
+        font-weight: 800;
+      }
+
+      .badge-today {
+        background-color: var(--status-today-bg);
+        color: var(--status-today-text);
+        border-color: var(--status-today-border);
+        font-weight: 800;
+      }
+
+      .badge-upcoming {
+        background-color: #f8fafc;
+        color: #334155;
+        border-color: #cbd5e1;
+      }
+
+      .badge-completed {
+        background-color: var(--status-completed-bg);
+        color: var(--status-completed-text);
+        border-color: var(--status-completed-border);
+      }
+
+      .badge-nodate {
+        background-color: #f8fafc;
+        color: #94a3b8;
+        border-color: #e2e8f0;
+      }
+
+      /* 액션 버튼 */
+      .task-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+
+      .action-btn {
+        width: 36px;
+        height: 36px;
+        border: 1px solid transparent;
+        background-color: transparent;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-text-muted);
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .action-btn:hover {
+        background-color: #f1f5f9;
+        color: var(--color-text-main);
+      }
+
+      .action-btn.delete:hover {
+        background-color: #fee2e2;
+        color: #dc2626;
+        border-color: #fca5a5;
+      }
+
+      .action-btn svg {
+        width: 17px;
+        height: 17px;
+      }
+
+      /* 빈 상태 안내 */
+      .empty-state {
+        background-color: var(--color-bg-card);
+        border: 2px dashed var(--color-border);
+        border-radius: var(--radius);
+        padding: 48px 24px;
+        text-align: center;
+        margin-top: 8px;
+      }
+
+      .empty-icon {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 16px auto;
+        background-color: var(--color-primary-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-primary);
+        font-size: 28px;
+      }
+
+      .empty-title {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--color-text-main);
+        margin-bottom: 6px;
+      }
+
+      .empty-desc {
+        font-size: 13px;
+        color: var(--color-text-sub);
+        max-width: 380px;
+        margin: 0 auto 16px auto;
+        line-height: 1.5;
+      }
+
+      .btn-empty-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        background-color: var(--color-primary-light);
+        color: var(--color-primary);
+        border: 1px solid var(--color-primary-border);
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .btn-empty-action:hover {
+        background-color: #dbeafe;
+      }
+
+      /* 토스트 알림 (저장 성공/실패 등) */
+      .toast-container {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        pointer-events: none;
+      }
+
+      .toast {
+        background-color: #1e293b;
+        color: #ffffff;
+        padding: 12px 18px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: var(--shadow-lg);
+        animation: slideUp 0.25s ease;
+        pointer-events: auto;
+        max-width: 360px;
+      }
+
+      .toast.error {
+        background-color: #b91c1c;
+      }
+
+      .toast.warning {
+        background-color: #c2410c;
+      }
+
+      /* 모달 다이얼로그 (수정 및 삭제 확인) */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(15, 23, 42, 0.45);
+        backdrop-filter: blur(2px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+        padding: 16px;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+        animation: fadeIn 0.15s ease;
+      }
+
+      .modal-card {
+        background-color: #ffffff;
+        border-radius: var(--radius);
+        width: 100%;
+        max-width: 500px;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--color-border);
+        padding: 24px;
+        animation: zoomIn 0.2s ease;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+
+      .modal-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--color-text-main);
+      }
+
+      .modal-close-btn {
+        background: transparent;
+        border: none;
+        font-size: 20px;
+        color: var(--color-text-muted);
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 6px;
+      }
+      .modal-close-btn:hover {
+        background-color: #f1f5f9;
+        color: var(--color-text-main);
+      }
+
+      .modal-body {
+        margin-bottom: 24px;
+      }
+
+      .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+
+      .btn-secondary {
+        height: 42px;
+        padding: 0 16px;
+        background-color: #f1f5f9;
+        color: var(--color-text-main);
+        border: 1px solid var(--color-border);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-secondary:hover {
+        background-color: #e2e8f0;
+      }
+
+      .btn-primary {
+        height: 42px;
+        padding: 0 18px;
+        background-color: var(--color-primary);
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-primary:hover {
+        background-color: var(--color-primary-hover);
+      }
+
+      .btn-danger {
+        height: 42px;
+        padding: 0 18px;
+        background-color: #dc2626;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn-danger:hover {
+        background-color: #b91c1c;
+      }
+
+      /* 애니메이션 */
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      @keyframes zoomIn {
+        from { opacity: 0; transform: scale(0.96); }
+        to { opacity: 1; transform: scale(1); }
+      }
+
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* 반응형 세부 조정 */
+      @media (max-width: 640px) {
+        body {
+          padding: 14px 10px 40px 10px;
+        }
+        .app-header, .task-form-card {
+          padding: 18px 16px;
+        }
+        .header-title-row {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+        }
+        .task-item {
+          padding: 14px 14px;
+        }
+        .secondary-controls {
+          width: 100%;
+        }
+        .search-input {
+          width: 100%;
+        }
+        .search-input:focus {
+          width: 100%;
+        }
+        .sort-select {
+          width: 100%;
+        }
+        .filter-tabs {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- 1. 앱 헤더 및 정보 -->
+      <header class="app-header">
+        <div class="header-title-row">
+          <div class="brand">
+            <div class="brand-icon">✓</div>
+            <div class="brand-text">
+              <h1>내 업무 플래너</h1>
+              <p>개인 업무 등록 및 마감일·완료 상태를 관리하는 한 화면 플래너</p>
+            </div>
+          </div>
+          <!-- 저장 안내 뱃지 (필수 조건) -->
+          <div class="sync-notice-pill" title="브라우저 로컬 저장소(localStorage)에 안전하게 보관됩니다.">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>이 브라우저에 저장되며 다른 기기와 자동 동기화되지 않습니다</span>
+          </div>
+        </div>
+
+        <!-- 업무 통계 및 진행률 -->
+        <div class="stats-bar">
+          <div class="stat-card">
+            <span class="stat-label">전체 업무</span>
+            <span class="stat-value" id="statTotal">0</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">진행 중</span>
+            <span class="stat-value" id="statPending">0</span>
+          </div>
+          <div class="stat-card urgent">
+            <span class="stat-label">오늘 마감 / 지연</span>
+            <span class="stat-value" id="statUrgent">0</span>
+          </div>
+          <div class="stat-card completed">
+            <span class="stat-label">완료됨</span>
+            <span class="stat-value" id="statCompleted">0</span>
+          </div>
+        </div>
+
+        <div class="progress-container">
+          <div class="progress-meta">
+            <span>업무 달성률</span>
+            <span id="progressPercent">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progressBar"></div>
+          </div>
+        </div>
+      </header>
+
+      <!-- 2. 신규 업무 등록 카드 (입력창과 목록 분리) -->
+      <section class="task-form-card" aria-labelledby="formHeading">
+        <div class="form-title" id="formHeading">
+          <span>새로운 업무 등록</span>
+          <span class="form-title-badge">신규</span>
+        </div>
+
+        <!-- 업무명 입력 필드 -->
+        <div class="input-group">
+          <label for="taskTitleInput" class="input-label">
+            업무명 <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="taskTitleInput"
+            class="text-input"
+            placeholder="업무명을 입력하세요 (예: 2분기 사업보고서 작성 및 피드백)"
+            autocomplete="off"
+            maxlength="200"
+          />
+          <!-- 공백 및 누락 시 표시되는 이유 안내 문구 (필수 조건) -->
+          <div class="form-error-message" id="titleError">
+            <svg width="15" height="15" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+            </svg>
+            <span id="titleErrorText">업무명을 입력해주세요. 공백만으로는 등록할 수 없습니다.</span>
+          </div>
+        </div>
+
+        <!-- 2분할 행: 우선순위 선택 & 마감일 선택 -->
+        <div class="form-row">
+          <!-- 우선순위 선택 (색상과 글자로 함께 표시, 기본값 보통) -->
+          <div class="input-group" style="margin-bottom: 0;">
+            <label class="input-label">우선순위 선택</label>
+            <div class="priority-options" role="radiogroup" aria-label="업무 우선순위">
+              <button type="button" class="priority-option-btn" data-value="high" role="radio" aria-checked="false">
+                <span class="dot"></span>
+                <span>높음</span>
+              </button>
+              <button type="button" class="priority-option-btn active" data-value="medium" role="radio" aria-checked="true">
+                <span class="dot"></span>
+                <span>보통</span>
+              </button>
+              <button type="button" class="priority-option-btn" data-value="low" role="radio" aria-checked="false">
+                <span class="dot"></span>
+                <span>낮음</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 마감일 선택 (선택사항, 없으면 '마감일 없음') -->
+          <div class="input-group" style="margin-bottom: 0;">
+            <label for="taskDueDateInput" class="input-label">
+              마감일 <span style="font-size: 11px; font-weight: normal; color: var(--color-text-muted);">(선택사항)</span>
+            </label>
+            <div class="date-input-wrapper">
+              <div class="date-input-row">
+                <input type="date" id="taskDueDateInput" class="date-input" />
+                <button type="button" class="btn-clear-date" id="btnClearDate" title="날짜 초기화">
+                  초기화
+                </button>
+              </div>
+              <div class="quick-date-chips">
+                <button type="button" class="date-chip" data-quick="today">오늘</button>
+                <button type="button" class="date-chip" data-quick="tomorrow">내일</button>
+                <button type="button" class="date-chip" data-quick="next-week">다음 주 (+7일)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 등록 버튼 -->
+        <button type="button" class="btn-submit-task" id="btnAddTask">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>업무 등록하기</span>
+        </button>
+      </section>
+
+      <!-- 3. 업무 목록 및 필터 컨트롤 -->
+      <section aria-labelledby="listHeading">
+        <h2 id="listHeading" style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--color-text-main);">
+          내 업무 목록
+        </h2>
+
+        <div class="list-controls">
+          <!-- 필터 탭 -->
+          <div class="filter-tabs" role="tablist">
+            <button class="filter-tab active" data-filter="all">
+              <span>전체</span>
+              <span class="tab-count" id="countAll">0</span>
+            </button>
+            <button class="filter-tab" data-filter="pending">
+              <span>진행 중</span>
+              <span class="tab-count" id="countPending">0</span>
+            </button>
+            <button class="filter-tab" data-filter="urgent">
+              <span>오늘 마감·지연</span>
+              <span class="tab-count" id="countUrgent">0</span>
+            </button>
+            <button class="filter-tab" data-filter="completed">
+              <span>완료됨</span>
+              <span class="tab-count" id="countCompleted">0</span>
+            </button>
+          </div>
+
+          <!-- 보조 컨트롤: 검색창 & 정렬 선택 -->
+          <div class="secondary-controls">
+            <div class="search-input-wrap">
+              <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input type="text" id="searchInput" class="search-input" placeholder="업무 검색..." autocomplete="off" />
+            </div>
+
+            <select id="sortSelect" class="sort-select" aria-label="업무 정렬 순서">
+              <option value="created-desc">등록 최신순</option>
+              <option value="due-asc">마감일 임박순</option>
+              <option value="due-desc">마감일 늦은순</option>
+              <option value="priority-desc">우선순위 높은순</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 실제 업무 카드들이 렌더링되는 컨테이너 -->
+        <div class="task-list" id="taskListContainer" role="list">
+          <!-- 자바스크립트로 렌더링 -->
+        </div>
+
+        <!-- 업무가 없을 때 시작 안내 (Empty State) -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+          <div class="empty-icon">📝</div>
+          <div class="empty-title" id="emptyTitle">등록된 업무가 없습니다</div>
+          <p class="empty-desc" id="emptyDesc">
+            상단 입력창에서 오늘 진행할 업무를 등록해 보세요.<br />
+            마감일과 우선순위를 설정하면 더욱 체계적으로 관리할 수 있습니다.
+          </p>
+          <button type="button" class="btn-empty-action" id="btnFocusInput">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            <span>첫 업무 등록하러 가기</span>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- 수정 모달 -->
+    <div class="modal-overlay" id="editModal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title" id="editModalTitle">업무 내용 수정</h3>
+          <button type="button" class="modal-close-btn" id="btnCloseEditModal" aria-label="닫기">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group">
+            <label for="editTaskTitle" class="input-label">업무명 <span class="required">*</span></label>
+            <input type="text" id="editTaskTitle" class="text-input" maxlength="200" />
+            <div class="form-error-message" id="editTitleError">
+              <span id="editTitleErrorText">업무명을 입력해주세요. 공백만으로는 수정할 수 없습니다.</span>
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label">우선순위</label>
+            <div class="priority-options" id="editPriorityOptions">
+              <button type="button" class="priority-option-btn" data-value="high">
+                <span class="dot"></span>
+                <span>높음</span>
+              </button>
+              <button type="button" class="priority-option-btn" data-value="medium">
+                <span class="dot"></span>
+                <span>보통</span>
+              </button>
+              <button type="button" class="priority-option-btn" data-value="low">
+                <span class="dot"></span>
+                <span>낮음</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="input-group" style="margin-bottom: 0;">
+            <label for="editTaskDueDate" class="input-label">마감일 (선택사항)</label>
+            <div class="date-input-row">
+              <input type="date" id="editTaskDueDate" class="date-input" />
+              <button type="button" class="btn-clear-date" id="btnEditClearDate">초기화</button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btnCancelEdit">취소</button>
+          <button type="button" class="btn-primary" id="btnSaveEdit">수정 완료</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 삭제 확인 모달 (선택한 항목만 안전하게 삭제) -->
+    <div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
+      <div class="modal-card" style="max-width: 420px;">
+        <div class="modal-header">
+          <h3 class="modal-title" id="deleteModalTitle" style="color: #dc2626;">업무 삭제 확인</h3>
+          <button type="button" class="modal-close-btn" id="btnCloseDeleteModal" aria-label="닫기">✕</button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size: 14px; color: var(--color-text-main); margin-bottom: 8px;">
+            선택한 아래 업무를 정말로 삭제하시겠습니까?
+          </p>
+          <p id="deleteTaskTitlePreview" style="font-size: 14px; font-weight: 700; color: #1e293b; background: #f8fafc; padding: 10px 14px; border-radius: 6px; border: 1px solid #e2e8f0; word-break: break-all;">
+          </p>
+          <p style="font-size: 12px; color: var(--color-text-muted); margin-top: 8px;">
+            삭제 후에는 이 브라우저에서 복구할 수 없습니다.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btnCancelDelete">취소</button>
+          <button type="button" class="btn-danger" id="btnConfirmDelete">삭제하기</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 토스트 알림 컨테이너 -->
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+    <!-- 4. 순수 자바스크립트 로직 (외부 의존성 없음, 파일 단독 실행 지원) -->
+    <script>
+      (function() {
+        'use strict';
+
+        // 로컬 스토리지 키
+        var STORAGE_KEY = 'my_work_planner_tasks_v1';
+
+        // 상태 변수
+        var tasks = [];
+        var currentFilter = 'all';
+        var currentSearch = '';
+        var currentSort = 'created-desc';
+        var selectedPriority = 'medium'; // 기본값 보통
+        var editingTaskId = null;
+        var deletingTaskId = null;
+
+        // DOM 요소 캐싱
+        var titleInput = document.getElementById('taskTitleInput');
+        var dueDateInput = document.getElementById('taskDueDateInput');
+        var btnClearDate = document.getElementById('btnClearDate');
+        var btnAddTask = document.getElementById('btnAddTask');
+        var titleError = document.getElementById('titleError');
+        var titleErrorText = document.getElementById('titleErrorText');
+        var taskListContainer = document.getElementById('taskListContainer');
+        var emptyState = document.getElementById('emptyState');
+        var emptyTitle = document.getElementById('emptyTitle');
+        var emptyDesc = document.getElementById('emptyDesc');
+        var btnFocusInput = document.getElementById('btnFocusInput');
+
+        // 통계 DOM
+        var statTotal = document.getElementById('statTotal');
+        var statPending = document.getElementById('statPending');
+        var statUrgent = document.getElementById('statUrgent');
+        var statCompleted = document.getElementById('statCompleted');
+        var progressBar = document.getElementById('progressBar');
+        var progressPercent = document.getElementById('progressPercent');
+
+        // 탭 카운트 DOM
+        var countAll = document.getElementById('countAll');
+        var countPending = document.getElementById('countPending');
+        var countUrgent = document.getElementById('countUrgent');
+        var countCompleted = document.getElementById('countCompleted');
+
+        var filterTabs = document.querySelectorAll('.filter-tab');
+        var searchInput = document.getElementById('searchInput');
+        var sortSelect = document.getElementById('sortSelect');
+
+        // 모달 DOM
+        var editModal = document.getElementById('editModal');
+        var editTaskTitle = document.getElementById('editTaskTitle');
+        var editTaskDueDate = document.getElementById('editTaskDueDate');
+        var btnEditClearDate = document.getElementById('btnEditClearDate');
+        var editTitleError = document.getElementById('editTitleError');
+        var btnCloseEditModal = document.getElementById('btnCloseEditModal');
+        var btnCancelEdit = document.getElementById('btnCancelEdit');
+        var btnSaveEdit = document.getElementById('btnSaveEdit');
+
+        var deleteModal = document.getElementById('deleteModal');
+        var deleteTaskTitlePreview = document.getElementById('deleteTaskTitlePreview');
+        var btnCloseDeleteModal = document.getElementById('btnCloseDeleteModal');
+        var btnCancelDelete = document.getElementById('btnCancelDelete');
+        var btnConfirmDelete = document.getElementById('btnConfirmDelete');
+
+        var toastContainer = document.getElementById('toastContainer');
+
+        /* -------------------------------------------------------------
+           날짜 계산 유틸리티 (사용자 로컬 타임존 기준 엄격 적용)
+           ------------------------------------------------------------- */
+        function getLocalTodayStr() {
+          var now = new Date();
+          var year = now.getFullYear();
+          var month = String(now.getMonth() + 1).padStart(2, '0');
+          var day = String(now.getDate()).padStart(2, '0');
+          return year + '-' + month + '-' + day;
+        }
+
+        function formatDisplayDate(dateStr) {
+          if (!dateStr) return '마감일 없음';
+          var parts = dateStr.split('-');
+          if (parts.length !== 3) return dateStr;
+          return parts[0] + '.' + parts[1] + '.' + parts[2];
+        }
+
+        // D-day 계산 함수
+        function getDaysDiff(targetDateStr, baseDateStr) {
+          var target = new Date(targetDateStr + 'T00:00:00');
+          var base = new Date(baseDateStr + 'T00:00:00');
+          var diffTime = target.getTime() - base.getTime();
+          return Math.round(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        /* -------------------------------------------------------------
+           업무 상태 계산 규칙 (사용자 요청 명세 준수):
+           - 사용자의 로컬 날짜를 기준으로 비교
+           - 오늘 이전 날짜의 미완료 업무에만 '기한 지남'
+           - 오늘 날짜의 미완료 업무는 '오늘 마감'
+           - 오늘을 기한 지남으로 표시하지 마 (엄격)
+           - 완료된 업무는 기한 지남 표시에서 제외 (엄격)
+           ------------------------------------------------------------- */
+        function getTaskStatusInfo(task, todayStr) {
+          if (task.completed) {
+            return {
+              type: 'completed',
+              label: '완료됨',
+              badgeClass: 'badge-completed',
+              isUrgent: false
+            };
+          }
+
+          if (!task.dueDate) {
+            return {
+              type: 'nodate',
+              label: '마감일 없음',
+              badgeClass: 'badge-nodate',
+              isUrgent: false
+            };
+          }
+
+          if (task.dueDate < todayStr) {
+            var overdueDays = Math.abs(getDaysDiff(task.dueDate, todayStr));
+            return {
+              type: 'overdue',
+              label: '기한 지남 (' + overdueDays + '일 초과)',
+              badgeClass: 'badge-overdue',
+              isUrgent: true
+            };
+          }
+
+          if (task.dueDate === todayStr) {
+            return {
+              type: 'today',
+              label: '오늘 마감',
+              badgeClass: 'badge-today',
+              isUrgent: true
+            };
+          }
+
+          // 미래 마감일
+          var daysLeft = getDaysDiff(task.dueDate, todayStr);
+          return {
+            type: 'upcoming',
+            label: 'D-' + daysLeft + ' (' + formatDisplayDate(task.dueDate) + ')',
+            badgeClass: 'badge-upcoming',
+            isUrgent: false
+          };
+        }
+
+        function getPriorityInfo(priority) {
+          switch (priority) {
+            case 'high':
+              return { label: '높음', icon: '🔴', className: 'badge-priority-high' };
+            case 'low':
+              return { label: '낮음', icon: '⚪', className: 'badge-priority-low' };
+            case 'medium':
+            default:
+              return { label: '보통', icon: '🔵', className: 'badge-priority-medium' };
+          }
+        }
+
+        /* -------------------------------------------------------------
+           토스트 알림
+           ------------------------------------------------------------- */
+        function showToast(message, type) {
+          type = type || 'info';
+          var toast = document.createElement('div');
+          toast.className = 'toast ' + type;
+          toast.textContent = message;
+
+          toastContainer.appendChild(toast);
+          setTimeout(function() {
+            toast.style.transition = 'opacity 0.3s, transform 0.3s';
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(10px)';
+            setTimeout(function() {
+              if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+              }
+            }, 300);
+          }, 3200);
+        }
+
+        /* -------------------------------------------------------------
+           로컬 스토리지 저장 및 불러오기 (에러 핸들링 포함)
+           - 등록·변경·완료·삭제 직후 저장
+           - 저장 실패 감지 시 안내 문구
+           - 샘플 데이터 반복 추가 방지 (초기 빈 목록)
+           ------------------------------------------------------------- */
+        function saveTasksToStorage() {
+          try {
+            var data = JSON.stringify(tasks);
+            localStorage.setItem(STORAGE_KEY, data);
+            return true;
+          } catch (e) {
+            console.error('LocalStorage 저장 오류:', e);
+            showToast('저장되지 않았습니다. 브라우저 저장 공간을 확인해 주세요.', 'error');
+            return false;
+          }
+        }
+
+        function loadTasksFromStorage() {
+          try {
+            var raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) {
+              // 처음에는 빈 목록으로 시작
+              tasks = [];
+              return;
+            }
+            var parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) {
+              tasks = parsed;
+            } else {
+              tasks = [];
+            }
+          } catch (e) {
+            console.error('LocalStorage 로드 오류:', e);
+            tasks = [];
+            showToast('저장된 데이터를 읽어오는 중 오류가 발생했습니다.', 'error');
+          }
+        }
+
+        /* -------------------------------------------------------------
+           고유 ID 생성 (다른 항목이 사라지지 않도록 고유 ID 사용)
+           ------------------------------------------------------------- */
+        function generateUniqueId() {
+          return 'task_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 9);
+        }
+
+        /* -------------------------------------------------------------
+           화면 렌더링 (통계, 뱃지, 목록, 필터링, 정렬)
+           ------------------------------------------------------------- */
+        function render() {
+          var todayStr = getLocalTodayStr();
+
+          // 1. 전체 통계 계산
+          var totalCount = tasks.length;
+          var completedCount = 0;
+          var urgentCount = 0;
+
+          tasks.forEach(function(t) {
+            if (t.completed) {
+              completedCount++;
+            } else {
+              if (t.dueDate && t.dueDate <= todayStr) {
+                urgentCount++;
+              }
+            }
+          });
+
+          var pendingCount = totalCount - completedCount;
+          var rate = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
+
+          // 통계 DOM 갱신
+          statTotal.textContent = totalCount;
+          statPending.textContent = pendingCount;
+          statUrgent.textContent = urgentCount;
+          statCompleted.textContent = completedCount;
+          progressBar.style.width = rate + '%';
+          progressPercent.textContent = rate + '%';
+
+          // 탭 숫자 갱신
+          countAll.textContent = totalCount;
+          countPending.textContent = pendingCount;
+          countUrgent.textContent = urgentCount;
+          countCompleted.textContent = completedCount;
+
+          // 2. 목록 필터링
+          var filtered = tasks.filter(function(t) {
+            // 탭 필터
+            if (currentFilter === 'pending' && t.completed) return false;
+            if (currentFilter === 'completed' && !t.completed) return false;
+            if (currentFilter === 'urgent') {
+              if (t.completed) return false;
+              if (!t.dueDate || t.dueDate > todayStr) return false;
+            }
+
+            // 검색어 필터
+            if (currentSearch.trim() !== '') {
+              var q = currentSearch.toLowerCase().trim();
+              if (t.title.toLowerCase().indexOf(q) === -1) {
+                return false;
+              }
+            }
+            return true;
+          });
+
+          // 3. 목록 정렬
+          var sorted = filtered.slice().sort(function(a, b) {
+            if (currentSort === 'created-desc') {
+              return b.createdAt - a.createdAt;
+            }
+            if (currentSort === 'priority-desc') {
+              var pRank = { high: 3, medium: 2, low: 1 };
+              var pDiff = (pRank[b.priority] || 2) - (pRank[a.priority] || 2);
+              if (pDiff !== 0) return pDiff;
+              return b.createdAt - a.createdAt;
+            }
+            if (currentSort === 'due-asc') {
+              // 마감일 없는 항목은 맨 뒤로
+              if (!a.dueDate && !b.dueDate) return b.createdAt - a.createdAt;
+              if (!a.dueDate) return 1;
+              if (!b.dueDate) return -1;
+              return a.dueDate.localeCompare(b.dueDate);
+            }
+            if (currentSort === 'due-desc') {
+              if (!a.dueDate && !b.dueDate) return b.createdAt - a.createdAt;
+              if (!a.dueDate) return 1;
+              if (!b.dueDate) return -1;
+              return b.dueDate.localeCompare(a.dueDate);
+            }
+            return 0;
+          });
+
+          // 4. 리스트 DOM 렌더링
+          taskListContainer.innerHTML = '';
+
+          if (tasks.length === 0) {
+            // 처음 또는 모든 업무 삭제 시
+            emptyState.style.display = 'block';
+            emptyTitle.textContent = '등록된 업무가 없습니다';
+            emptyDesc.innerHTML = '상단 입력창에서 오늘 진행할 업무를 등록해 보세요.<br />마감일과 우선순위를 설정하면 더욱 체계적으로 관리할 수 있습니다.';
+            btnFocusInput.style.display = 'inline-flex';
+          } else if (sorted.length === 0) {
+            // 검색/필터 결과가 없을 때
+            emptyState.style.display = 'block';
+            emptyTitle.textContent = '해당 조건의 업무가 없습니다';
+            emptyDesc.textContent = '선택한 필터나 검색어에 일치하는 업무가 없습니다.';
+            btnFocusInput.style.display = 'none';
+          } else {
+            emptyState.style.display = 'none';
+
+            sorted.forEach(function(task) {
+              var itemEl = document.createElement('div');
+              itemEl.className = 'task-item' + (task.completed ? ' completed' : '');
+              itemEl.setAttribute('data-id', task.id);
+
+              var statusInfo = getTaskStatusInfo(task, todayStr);
+              var priorityInfo = getPriorityInfo(task.priority);
+
+              var itemHTML = '';
+              itemHTML += '<div class="task-left">';
+              itemHTML += '  <div class="checkbox-wrapper">';
+              itemHTML += '    <input type="checkbox" class="custom-checkbox task-check-btn" ' + (task.completed ? 'checked' : '') + ' aria-label="' + escapeHTML(task.title) + ' 완료 여부 토글" />';
+              itemHTML += '  </div>';
+              itemHTML += '  <div class="task-content">';
+              itemHTML += '    <div class="task-title-row">';
+              itemHTML += '      <span class="task-title">' + escapeHTML(task.title) + '</span>';
+              itemHTML += '    </div>';
+              itemHTML += '    <div class="task-meta-row">';
+
+              // 우선순위 뱃지 (색상과 글자 함께 표시)
+              itemHTML += '      <span class="badge ' + priorityInfo.className + '">';
+              itemHTML += '        <span>' + priorityInfo.icon + '</span>';
+              itemHTML += '        <span>' + priorityInfo.label + '</span>';
+              itemHTML += '      </span>';
+
+              // 상태 및 마감일 뱃지
+              itemHTML += '      <span class="badge ' + statusInfo.badgeClass + '">';
+              itemHTML += '        <span>' + escapeHTML(statusInfo.label) + '</span>';
+              itemHTML += '      </span>';
+
+              if (task.completed && task.dueDate) {
+                itemHTML += '    <span style="font-size: 11px; color: var(--color-text-disabled);">(마감일: ' + formatDisplayDate(task.dueDate) + ')</span>';
+              }
+
+              itemHTML += '    </div>';
+              itemHTML += '  </div>';
+              itemHTML += '</div>';
+
+              // 액션 버튼 (수정, 삭제)
+              itemHTML += '<div class="task-actions">';
+              itemHTML += '  <button type="button" class="action-btn edit-task-btn" title="업무 수정" aria-label="수정">';
+              itemHTML += '    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>';
+              itemHTML += '  </button>';
+              itemHTML += '  <button type="button" class="action-btn delete delete-task-btn" title="선택한 업무 삭제" aria-label="삭제">';
+              itemHTML += '    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>';
+              itemHTML += '  </button>';
+              itemHTML += '</div>';
+
+              itemEl.innerHTML = itemHTML;
+
+              // 이벤트 바인딩
+              var checkBtn = itemEl.querySelector('.task-check-btn');
+              checkBtn.addEventListener('change', function() {
+                toggleTaskCompletion(task.id);
+              });
+
+              var editBtn = itemEl.querySelector('.edit-task-btn');
+              editBtn.addEventListener('click', function() {
+                openEditModal(task.id);
+              });
+
+              var deleteBtn = itemEl.querySelector('.delete-task-btn');
+              deleteBtn.addEventListener('click', function() {
+                openDeleteModal(task.id);
+              });
+
+              taskListContainer.appendChild(itemEl);
+            });
+          }
+        }
+
+        // HTML 문자열 이스케이프
+        function escapeHTML(str) {
+          if (!str) return '';
+          return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+        }
+
+        /* -------------------------------------------------------------
+           업무 등록 핸들러
+           - 공백만 있는 제목은 막고 이유를 안내
+           ------------------------------------------------------------- */
+        function handleAddTask() {
+          var titleVal = titleInput.value;
+          var trimmed = titleVal.trim();
+
+          // 유효성 검사: 공백만 있거나 비어있을 때 막고 이유 안내
+          if (!trimmed) {
+            titleInput.classList.add('error');
+            titleError.classList.add('active');
+            if (titleVal.length > 0) {
+              titleErrorText.textContent = '공백(스페이스/탭)만으로는 업무명을 등록할 수 없습니다. 유의미한 내용을 입력해 주세요.';
+            } else {
+              titleErrorText.textContent = '업무명을 입력해주세요. 빈 상태로는 등록할 수 없습니다.';
+            }
+            titleInput.focus();
+            return;
+          }
+
+          // 오류 초기화
+          titleInput.classList.remove('error');
+          titleError.classList.remove('active');
+
+          var dueDateVal = dueDateInput.value ? dueDateInput.value : null;
+
+          var newTask = {
+            id: generateUniqueId(),
+            title: trimmed,
+            priority: selectedPriority, // 'high' | 'medium' | 'low'
+            dueDate: dueDateVal,
+            completed: false,
+            createdAt: Date.now()
+          };
+
+          // 목록에 추가
+          tasks.unshift(newTask);
+
+          // 등록 직후 저장
+          if (saveTasksToStorage()) {
+            showToast('새 업무가 등록되었습니다.', 'info');
+          }
+
+          // 입력창 초기화
+          titleInput.value = '';
+          dueDateInput.value = '';
+          setPriority('medium'); // 기본값 보통으로 복원
+
+          render();
+          titleInput.focus();
+        }
+
+        /* -------------------------------------------------------------
+           완료 상태 토글 핸들러
+           - 완료 체크와 해제
+           - 직후 저장
+           ------------------------------------------------------------- */
+        function toggleTaskCompletion(taskId) {
+          var target = tasks.find(function(t) { return t.id === taskId; });
+          if (!target) return;
+
+          target.completed = !target.completed;
+          target.completedAt = target.completed ? Date.now() : null;
+
+          saveTasksToStorage();
+          render();
+
+          if (target.completed) {
+            showToast('업무를 완료했습니다! 수고하셨습니다 👏', 'info');
+          } else {
+            showToast('업무가 다시 진행 중으로 변경되었습니다.', 'info');
+          }
+        }
+
+        /* -------------------------------------------------------------
+           우선순위 선택 상태 관리
+           ------------------------------------------------------------- */
+        function setPriority(value) {
+          selectedPriority = value;
+          var buttons = document.querySelectorAll('.priority-options .priority-option-btn');
+          buttons.forEach(function(btn) {
+            if (btn.getAttribute('data-value') === value) {
+              btn.classList.add('active');
+              btn.setAttribute('aria-checked', 'true');
+            } else {
+              btn.classList.remove('active');
+              btn.setAttribute('aria-checked', 'false');
+            }
+          });
+        }
+
+        /* -------------------------------------------------------------
+           업무 수정 모달
+           ------------------------------------------------------------- */
+        function openEditModal(taskId) {
+          var target = tasks.find(function(t) { return t.id === taskId; });
+          if (!target) return;
+
+          editingTaskId = taskId;
+          editTaskTitle.value = target.title;
+          editTaskDueDate.value = target.dueDate || '';
+          editTitleError.classList.remove('active');
+          editTaskTitle.classList.remove('error');
+
+          // 모달 우선순위 셋업
+          var editPriorityBtns = document.querySelectorAll('#editPriorityOptions .priority-option-btn');
+          editPriorityBtns.forEach(function(btn) {
+            if (btn.getAttribute('data-value') === target.priority) {
+              btn.classList.add('active');
+            } else {
+              btn.classList.remove('active');
+            }
+          });
+
+          editModal.classList.add('active');
+          editTaskTitle.focus();
+        }
+
+        function closeEditModal() {
+          editModal.classList.remove('active');
+          editingTaskId = null;
+        }
+
+        function handleSaveEdit() {
+          if (!editingTaskId) return;
+          var target = tasks.find(function(t) { return t.id === editingTaskId; });
+          if (!target) return;
+
+          var trimmed = editTaskTitle.value.trim();
+          if (!trimmed) {
+            editTaskTitle.classList.add('error');
+            editTitleError.classList.add('active');
+            return;
+          }
+
+          var activePriorityBtn = document.querySelector('#editPriorityOptions .priority-option-btn.active');
+          var priorityVal = activePriorityBtn ? activePriorityBtn.getAttribute('data-value') : 'medium';
+
+          target.title = trimmed;
+          target.priority = priorityVal;
+          target.dueDate = editTaskDueDate.value ? editTaskDueDate.value : null;
+
+          if (saveTasksToStorage()) {
+            showToast('업무가 수정되었습니다.', 'info');
+          }
+
+          closeEditModal();
+          render();
+        }
+
+        /* -------------------------------------------------------------
+           업무 삭제 모달 (선택한 항목만 안전 삭제)
+           ------------------------------------------------------------- */
+        function openDeleteModal(taskId) {
+          var target = tasks.find(function(t) { return t.id === taskId; });
+          if (!target) return;
+
+          deletingTaskId = taskId;
+          deleteTaskTitlePreview.textContent = target.title;
+          deleteModal.classList.add('active');
+        }
+
+        function closeDeleteModal() {
+          deleteModal.classList.remove('active');
+          deletingTaskId = null;
+        }
+
+        function handleConfirmDelete() {
+          if (!deletingTaskId) return;
+
+          // 선택한 항목만 필터링하여 삭제
+          tasks = tasks.filter(function(t) { return t.id !== deletingTaskId; });
+
+          if (saveTasksToStorage()) {
+            showToast('업무가 삭제되었습니다.', 'info');
+          }
+
+          closeDeleteModal();
+          render();
+        }
+
+        /* -------------------------------------------------------------
+           이벤트 리스너 등록
+           ------------------------------------------------------------- */
+        function initEvents() {
+          // 입력창 실시간 오류 해제
+          titleInput.addEventListener('input', function() {
+            if (titleInput.value.trim().length > 0) {
+              titleInput.classList.remove('error');
+              titleError.classList.remove('active');
+            }
+          });
+
+          // 엔터 키로 등록
+          titleInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleAddTask();
+            }
+          });
+
+          // 등록 버튼 클릭
+          btnAddTask.addEventListener('click', handleAddTask);
+
+          // 우선순위 버튼 선택
+          var priorityButtons = document.querySelectorAll('.priority-options .priority-option-btn');
+          priorityButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              setPriority(this.getAttribute('data-value'));
+            });
+          });
+
+          // 날짜 초기화 버튼
+          btnClearDate.addEventListener('click', function() {
+            dueDateInput.value = '';
+          });
+
+          // 빠른 날짜 칩 버튼
+          var dateChips = document.querySelectorAll('.date-chip');
+          dateChips.forEach(function(chip) {
+            chip.addEventListener('click', function() {
+              var quick = this.getAttribute('data-quick');
+              var d = new Date();
+              if (quick === 'tomorrow') {
+                d.setDate(d.getDate() + 1);
+              } else if (quick === 'next-week') {
+                d.setDate(d.getDate() + 7);
+              }
+              var y = d.getFullYear();
+              var m = String(d.getMonth() + 1).padStart(2, '0');
+              var day = String(d.getDate()).padStart(2, '0');
+              dueDateInput.value = y + '-' + m + '-' + day;
+            });
+          });
+
+          // 필터 탭 클릭
+          filterTabs.forEach(function(tab) {
+            tab.addEventListener('click', function() {
+              filterTabs.forEach(function(t) { t.classList.remove('active'); });
+              this.classList.add('active');
+              currentFilter = this.getAttribute('data-filter');
+              render();
+            });
+          });
+
+          // 검색 입력
+          searchInput.addEventListener('input', function() {
+            currentSearch = this.value;
+            render();
+          });
+
+          // 정렬 선택
+          sortSelect.addEventListener('change', function() {
+            currentSort = this.value;
+            render();
+          });
+
+          // 빈 화면에서 입력창 포커스
+          btnFocusInput.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            titleInput.focus();
+          });
+
+          // 수정 모달 이벤트
+          var editPriorityButtons = document.querySelectorAll('#editPriorityOptions .priority-option-btn');
+          editPriorityButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              editPriorityButtons.forEach(function(b) { b.classList.remove('active'); });
+              this.classList.add('active');
+            });
+          });
+
+          btnEditClearDate.addEventListener('click', function() {
+            editTaskDueDate.value = '';
+          });
+
+          btnCloseEditModal.addEventListener('click', closeEditModal);
+          btnCancelEdit.addEventListener('click', closeEditModal);
+          btnSaveEdit.addEventListener('click', handleSaveEdit);
+          editTaskTitle.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleSaveEdit();
+            }
+          });
+
+          // 삭제 모달 이벤트
+          btnCloseDeleteModal.addEventListener('click', closeDeleteModal);
+          btnCancelDelete.addEventListener('click', closeDeleteModal);
+          btnConfirmDelete.addEventListener('click', handleConfirmDelete);
+
+          // ESC 키로 모달 닫기
+          window.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+              if (editModal.classList.contains('active')) closeEditModal();
+              if (deleteModal.classList.contains('active')) closeDeleteModal();
+            }
+          });
+
+          // 모달 배경 클릭 시 닫기
+          editModal.addEventListener('click', function(e) {
+            if (e.target === editModal) closeEditModal();
+          });
+          deleteModal.addEventListener('click', function(e) {
+            if (e.target === deleteModal) closeDeleteModal();
+          });
+        }
+
+        /* -------------------------------------------------------------
+           초기 실행
+           ------------------------------------------------------------- */
+        loadTasksFromStorage();
+        initEvents();
+        render();
+
+      })();
+    </script>
+  </body>
+</html>
