@@ -4,95 +4,170 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>내 업무 플래너</title>
-    <meta name="description" content="개인 업무를 등록하고 마감일과 우선순위, 완료 상태를 관리하는 간결하고 안전한 업무 플래너" />
+    <meta name="description" content="개인 업무를 등록하고 마감일과 우선순위, 완료 상태를 관리하는 애플 스타일 업무 플래너" />
     <meta property="og:title" content="내 업무 플래너" />
-    <meta property="og:description" content="개인 업무를 등록하고 마감일과 우선순위, 완료 상태를 관리하는 간결하고 안전한 업무 플래너" />
+    <meta property="og:description" content="개인 업무를 등록하고 마감일과 우선순위, 완료 상태를 관리하는 애플 스타일 업무 플래너" />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary" />
     <style>
-      /* --- 리셋 & 기본 변수 정의 --- */
+      /* --- Apple Design System CSS Variables --- */
       *, *::before, *::after {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
       }
 
+      /* Apple Light Mode (macOS / iOS HIG) */
       :root {
-        --color-primary: #2563eb;
-        --color-primary-hover: #1d4ed8;
-        --color-primary-light: #eff6ff;
-        --color-primary-border: #93c5fd;
+        --apple-blue: #0071e3;
+        --apple-blue-hover: #0077ed;
+        --apple-blue-tint: rgba(0, 113, 227, 0.08);
+        --apple-blue-tint-active: rgba(0, 113, 227, 0.16);
 
-        --color-bg-page: #f8fafc;
+        --color-bg-page: #f5f5f7;
         --color-bg-card: #ffffff;
-        --color-border: #e2e8f0;
-        --color-border-focus: #3b82f6;
+        --color-bg-input: #ffffff;
+        --color-bg-subtle: rgba(118, 118, 128, 0.08);
+        --color-bg-secondary: #fbfbfd;
 
-        --color-text-main: #0f172a;
-        --color-text-sub: #475569;
-        --color-text-muted: #64748b;
-        --color-text-disabled: #94a3b8;
+        --color-border: rgba(0, 0, 0, 0.08);
+        --color-border-hover: rgba(0, 0, 0, 0.15);
+        --color-border-focus: #0071e3;
+        --color-separator: rgba(60, 60, 67, 0.12);
 
-        /* 우선순위 색상 */
-        --priority-high-bg: #fef2f2;
-        --priority-high-text: #b91c1c;
-        --priority-high-border: #fca5a5;
+        --color-text-main: #1d1d1f;
+        --color-text-sub: #515154;
+        --color-text-muted: #86868b;
+        --color-text-disabled: #aeaeb2;
 
-        --priority-medium-bg: #eff6ff;
-        --priority-medium-text: #1d4ed8;
-        --priority-medium-border: #93c5fd;
+        /* Apple System Semantic Colors */
+        --apple-red: #ff3b30;
+        --apple-orange: #ff9500;
+        --apple-green: #34c759;
+        --apple-gray: #8e8e93;
 
-        --priority-low-bg: #f1f5f9;
-        --priority-low-text: #475569;
-        --priority-low-border: #cbd5e1;
+        --priority-high-bg: rgba(255, 59, 48, 0.1);
+        --priority-high-text: #d70015;
+        --priority-high-border: rgba(255, 59, 48, 0.2);
 
-        /* 상태 뱃지 색상 */
-        --status-overdue-bg: #fef2f2;
-        --status-overdue-text: #b91c1c;
-        --status-overdue-border: #f87171;
+        --priority-medium-bg: rgba(0, 113, 227, 0.09);
+        --priority-medium-text: #0071e3;
+        --priority-medium-border: rgba(0, 113, 227, 0.2);
 
-        --status-today-bg: #fff7ed;
-        --status-today-text: #c2410c;
-        --status-today-border: #fdba74;
+        --priority-low-bg: rgba(142, 142, 147, 0.12);
+        --priority-low-text: #636366;
+        --priority-low-border: rgba(142, 142, 147, 0.2);
 
-        --status-completed-bg: #f0fdf4;
-        --status-completed-text: #15803d;
-        --status-completed-border: #86efac;
+        --status-overdue-bg: rgba(255, 59, 48, 0.1);
+        --status-overdue-text: #d70015;
+        --status-overdue-border: rgba(255, 59, 48, 0.25);
 
-        --status-nodate-bg: #f8fafc;
-        --status-nodate-text: #64748b;
-        --status-nodate-border: #e2e8f0;
+        --status-today-bg: rgba(255, 149, 0, 0.12);
+        --status-today-text: #c93400;
+        --status-today-border: rgba(255, 149, 0, 0.28);
 
-        --font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Noto Sans KR", "Segoe UI", Roboto, sans-serif;
-        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-        --radius: 12px;
+        --status-completed-bg: rgba(52, 199, 89, 0.12);
+        --status-completed-text: #248a3d;
+        --status-completed-border: rgba(52, 199, 89, 0.25);
+
+        --status-nodate-bg: rgba(118, 118, 128, 0.08);
+        --status-nodate-text: #8e8e93;
+        --status-nodate-border: rgba(118, 118, 128, 0.16);
+
+        --font-apple: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Pretendard", "Segoe UI", Roboto, sans-serif;
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 20px;
+
+        --shadow-ambient: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+        --shadow-elevated: 0 10px 30px rgba(0, 0, 0, 0.07), 0 2px 6px rgba(0, 0, 0, 0.03);
+      }
+
+      /* Apple Dark Mode (iOS / macOS Dark Appearance) */
+      [data-theme="dark"], body.dark-mode {
+        --apple-blue: #2997ff;
+        --apple-blue-hover: #40a9ff;
+        --apple-blue-tint: rgba(41, 151, 255, 0.15);
+        --apple-blue-tint-active: rgba(41, 151, 255, 0.25);
+
+        --color-bg-page: #000000;
+        --color-bg-card: #1c1c1e;
+        --color-bg-input: #2c2c2e;
+        --color-bg-subtle: rgba(118, 118, 128, 0.24);
+        --color-bg-secondary: #161618;
+
+        --color-border: rgba(255, 255, 255, 0.1);
+        --color-border-hover: rgba(255, 255, 255, 0.2);
+        --color-border-focus: #2997ff;
+        --color-separator: rgba(255, 255, 255, 0.12);
+
+        --color-text-main: #f5f5f7;
+        --color-text-sub: #a1a1a6;
+        --color-text-muted: #86868b;
+        --color-text-disabled: #48484a;
+
+        --priority-high-bg: rgba(255, 69, 58, 0.2);
+        --priority-high-text: #ff453a;
+        --priority-high-border: rgba(255, 69, 58, 0.35);
+
+        --priority-medium-bg: rgba(41, 151, 255, 0.2);
+        --priority-medium-text: #70baff;
+        --priority-medium-border: rgba(41, 151, 255, 0.35);
+
+        --priority-low-bg: rgba(142, 142, 147, 0.2);
+        --priority-low-text: #aeaeb2;
+        --priority-low-border: rgba(142, 142, 147, 0.3);
+
+        --status-overdue-bg: rgba(255, 69, 58, 0.2);
+        --status-overdue-text: #ff453a;
+        --status-overdue-border: rgba(255, 69, 58, 0.4);
+
+        --status-today-bg: rgba(255, 159, 10, 0.2);
+        --status-today-text: #ff9f0a;
+        --status-today-border: rgba(255, 159, 10, 0.4);
+
+        --status-completed-bg: rgba(48, 209, 88, 0.2);
+        --status-completed-text: #30d158;
+        --status-completed-border: rgba(48, 209, 88, 0.35);
+
+        --status-nodate-bg: rgba(118, 118, 128, 0.18);
+        --status-nodate-text: #8e8e93;
+        --status-nodate-border: rgba(255, 255, 255, 0.1);
+
+        --shadow-ambient: 0 4px 20px rgba(0, 0, 0, 0.5);
+        --shadow-elevated: 0 16px 40px rgba(0, 0, 0, 0.7);
       }
 
       body {
-        font-family: var(--font-family);
+        font-family: var(--font-apple);
         background-color: var(--color-bg-page);
         color: var(--color-text-main);
-        line-height: 1.5;
+        line-height: 1.47;
+        letter-spacing: -0.012em;
         min-height: 100vh;
-        padding: 24px 16px 60px 16px;
-        -webkit-font-smoothing: antialiased;
+        padding: 36px 20px 80px 20px;
+        transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
       .app-container {
-        max-width: 840px;
+        max-width: 820px;
         margin: 0 auto;
       }
 
-      /* 헤더 영역 */
+      /* --- 1. Apple Style Header --- */
       .app-header {
         background-color: var(--color-bg-card);
         border: 1px solid var(--color-border);
-        border-radius: var(--radius);
-        padding: 24px 28px;
-        box-shadow: var(--shadow-sm);
+        border-radius: var(--radius-xl);
+        padding: 28px 32px;
+        box-shadow: var(--shadow-ambient);
         margin-bottom: 24px;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        transition: background-color 0.3s ease, border-color 0.3s ease;
       }
 
       .header-title-row {
@@ -106,102 +181,154 @@
       .brand {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 14px;
       }
 
+      /* Apple Reminders 느낌의 아이콘 */
       .brand-icon {
-        width: 44px;
-        height: 44px;
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        border-radius: 10px;
+        width: 46px;
+        height: 46px;
+        background: linear-gradient(145deg, #0071e3, #0056b3);
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: #ffffff;
-        font-size: 24px;
-        font-weight: 700;
-        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+        box-shadow: 0 6px 14px rgba(0, 113, 227, 0.28);
         flex-shrink: 0;
       }
 
+      .brand-icon svg {
+        width: 24px;
+        height: 24px;
+      }
+
       .brand-text h1 {
-        font-size: 24px;
-        font-weight: 800;
+        font-size: 23px;
+        font-weight: 700;
         color: var(--color-text-main);
-        letter-spacing: -0.02em;
+        letter-spacing: -0.024em;
         line-height: 1.2;
       }
 
       .brand-text p {
         font-size: 13px;
         color: var(--color-text-sub);
-        margin-top: 2px;
+        margin-top: 3px;
+        font-weight: 400;
       }
 
-      /* 저장 상태 공지 배너 */
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      /* Apple Pill Toggle Button */
+      .apple-toggle-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 34px;
+        padding: 0 14px;
+        background-color: var(--color-bg-subtle);
+        color: var(--color-text-main);
+        border: 1px solid var(--color-border);
+        border-radius: 980px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        user-select: none;
+      }
+
+      .apple-toggle-btn:hover {
+        background-color: var(--color-border-hover);
+        transform: translateY(-0.5px);
+      }
+
+      .apple-toggle-btn:active {
+        transform: scale(0.97);
+      }
+
+      .apple-toggle-btn .icon {
+        font-size: 13px;
+        line-height: 1;
+      }
+
+      /* 동기화 안내 배너 (Apple Callout Style) */
       .sync-notice-pill {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        background-color: #f1f5f9;
-        color: #475569;
+        background-color: var(--color-bg-subtle);
+        color: var(--color-text-sub);
         font-size: 12px;
         font-weight: 500;
-        padding: 6px 12px;
-        border-radius: 20px;
-        border: 1px solid #e2e8f0;
+        padding: 6px 14px;
+        border-radius: 980px;
+        border: 1px solid var(--color-border);
+        transition: all 0.25s ease;
       }
 
       .sync-notice-pill svg {
         width: 14px;
         height: 14px;
-        color: #2563eb;
+        color: var(--apple-blue);
         flex-shrink: 0;
       }
 
-      /* 통계 & 진행률 바 */
+      /* Apple Stats Grid */
       .stats-bar {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        grid-template-columns: repeat(4, 1fr);
         gap: 12px;
-        margin-top: 20px;
-        padding-top: 18px;
-        border-top: 1px solid var(--color-border);
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid var(--color-separator);
+      }
+
+      @media (max-width: 600px) {
+        .stats-bar {
+          grid-template-columns: repeat(2, 1fr);
+        }
       }
 
       .stat-card {
-        background-color: var(--color-bg-page);
-        border: 1px solid var(--color-border);
-        border-radius: 8px;
-        padding: 10px 14px;
+        background-color: var(--color-bg-subtle);
+        border: 1px solid transparent;
+        border-radius: var(--radius-md);
+        padding: 12px 16px;
         display: flex;
         flex-direction: column;
+        transition: background-color 0.25s ease;
       }
 
       .stat-label {
         font-size: 11px;
         font-weight: 600;
         color: var(--color-text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.02em;
+        letter-spacing: -0.01em;
       }
 
       .stat-value {
-        font-size: 20px;
-        font-weight: 800;
+        font-size: 22px;
+        font-weight: 700;
         color: var(--color-text-main);
         margin-top: 2px;
+        letter-spacing: -0.02em;
       }
 
       .stat-card.urgent .stat-value {
-        color: #dc2626;
+        color: var(--apple-red);
       }
       .stat-card.completed .stat-value {
-        color: #16a34a;
+        color: var(--apple-green);
       }
 
       .progress-container {
-        margin-top: 16px;
+        margin-top: 18px;
       }
 
       .progress-meta {
@@ -209,40 +336,43 @@
         justify-content: space-between;
         align-items: center;
         font-size: 12px;
-        font-weight: 600;
+        font-weight: 500;
         color: var(--color-text-sub);
-        margin-bottom: 6px;
+        margin-bottom: 7px;
       }
 
       .progress-track {
-        height: 8px;
-        background-color: #e2e8f0;
-        border-radius: 999px;
+        height: 6px;
+        background-color: var(--color-bg-subtle);
+        border-radius: 980px;
         overflow: hidden;
       }
 
       .progress-fill {
         height: 100%;
-        background: linear-gradient(90deg, #3b82f6, #2563eb);
+        background: var(--apple-blue);
+        border-radius: 980px;
         width: 0%;
-        transition: width 0.3s ease;
+        transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
-      /* 입력 폼 영역 */
+      /* --- 2. New Task Card (Apple Form Elements) --- */
       .task-form-card {
         background-color: var(--color-bg-card);
         border: 1px solid var(--color-border);
-        border-radius: var(--radius);
-        padding: 24px 28px;
-        box-shadow: var(--shadow-sm);
+        border-radius: var(--radius-xl);
+        padding: 28px 32px;
+        box-shadow: var(--shadow-ambient);
         margin-bottom: 24px;
+        transition: background-color 0.3s ease, border-color 0.3s ease;
       }
 
       .form-title {
         font-size: 17px;
         font-weight: 700;
         color: var(--color-text-main);
-        margin-bottom: 16px;
+        letter-spacing: -0.015em;
+        margin-bottom: 18px;
         display: flex;
         align-items: center;
         gap: 8px;
@@ -250,63 +380,68 @@
 
       .form-title-badge {
         font-size: 11px;
-        font-weight: 700;
-        background-color: var(--color-primary-light);
-        color: var(--color-primary);
+        font-weight: 600;
+        background-color: var(--apple-blue-tint);
+        color: var(--apple-blue);
         padding: 2px 8px;
-        border-radius: 4px;
+        border-radius: 6px;
       }
 
       .input-group {
-        margin-bottom: 16px;
+        margin-bottom: 18px;
       }
 
       .input-label {
         display: block;
-        font-size: 13px;
+        font-size: 12px;
         font-weight: 600;
-        color: var(--color-text-main);
-        margin-bottom: 6px;
+        color: var(--color-text-sub);
+        margin-bottom: 7px;
+        letter-spacing: -0.01em;
       }
 
       .input-label .required {
-        color: #dc2626;
+        color: var(--apple-red);
         margin-left: 2px;
       }
 
+      /* Apple Inset Text Input */
       .text-input {
         width: 100%;
-        height: 46px;
-        padding: 0 16px;
+        height: 44px;
+        padding: 0 14px;
         font-size: 15px;
         font-family: inherit;
         color: var(--color-text-main);
-        background-color: #ffffff;
-        border: 1.5px solid var(--color-border);
-        border-radius: 8px;
+        background-color: var(--color-bg-input);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
         outline: none;
-        transition: border-color 0.15s, box-shadow 0.15s;
+        transition: border-color 0.15s, box-shadow 0.15s, background-color 0.25s, color 0.25s;
+      }
+
+      .text-input::placeholder {
+        color: var(--color-text-muted);
       }
 
       .text-input:focus {
         border-color: var(--color-border-focus);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        box-shadow: 0 0 0 3px var(--apple-blue-tint);
       }
 
       .text-input.error {
-        border-color: #dc2626 !important;
-        background-color: #fffafb;
+        border-color: var(--apple-red) !important;
+        background-color: var(--priority-high-bg);
       }
 
-      /* 유효성 검사 에러 메시지 */
       .form-error-message {
         display: none;
         align-items: center;
         gap: 6px;
         margin-top: 6px;
-        font-size: 13px;
-        font-weight: 600;
-        color: #dc2626;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--apple-red);
         animation: fadeIn 0.2s ease;
       }
 
@@ -318,7 +453,7 @@
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 16px;
-        margin-bottom: 20px;
+        margin-bottom: 22px;
       }
 
       @media (max-width: 640px) {
@@ -327,76 +462,68 @@
         }
       }
 
-      /* 우선순위 선택 버튼 그룹 */
-      .priority-options {
+      /* Apple Segmented Control for Priority */
+      .apple-segmented-group {
         display: flex;
-        gap: 8px;
+        background-color: var(--color-bg-subtle);
+        padding: 3px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--color-border);
+        gap: 3px;
       }
 
       .priority-option-btn {
         flex: 1;
-        height: 44px;
+        height: 38px;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 6px;
-        border-radius: 8px;
+        border-radius: var(--radius-sm);
         font-size: 13px;
-        font-weight: 700;
+        font-weight: 600;
         cursor: pointer;
-        border: 1.5px solid var(--color-border);
-        background-color: #ffffff;
+        border: 1px solid transparent;
+        background-color: transparent;
         color: var(--color-text-sub);
-        transition: all 0.15s ease;
+        transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
         user-select: none;
       }
 
       .priority-option-btn:hover {
-        border-color: #cbd5e1;
-        background-color: #f8fafc;
+        color: var(--color-text-main);
       }
 
       .priority-option-btn .dot {
-        width: 8px;
-        height: 8px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
         display: inline-block;
       }
 
-      /* 우선순위 선택 활성 상태 */
+      .priority-option-btn[data-value="high"] .dot { background-color: var(--apple-red); }
+      .priority-option-btn[data-value="medium"] .dot { background-color: var(--apple-blue); }
+      .priority-option-btn[data-value="low"] .dot { background-color: var(--apple-gray); }
+
+      /* Segmented active selection */
+      .priority-option-btn.active {
+        background-color: var(--color-bg-card);
+        color: var(--color-text-main);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+      }
+
       .priority-option-btn[data-value="high"].active {
-        background-color: var(--priority-high-bg);
         color: var(--priority-high-text);
-        border-color: var(--priority-high-border);
-        box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.12);
       }
-      .priority-option-btn[data-value="high"] .dot {
-        background-color: #dc2626;
-      }
-
       .priority-option-btn[data-value="medium"].active {
-        background-color: var(--priority-medium-bg);
-        color: var(--priority-medium-text);
-        border-color: var(--priority-medium-border);
-        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+        color: var(--apple-blue);
       }
-      .priority-option-btn[data-value="medium"] .dot {
-        background-color: #2563eb;
-      }
-
       .priority-option-btn[data-value="low"].active {
-        background-color: var(--priority-low-bg);
-        color: var(--priority-low-text);
-        border-color: var(--priority-low-border);
-        box-shadow: 0 0 0 2px rgba(71, 85, 105, 0.12);
-      }
-      .priority-option-btn[data-value="low"] .dot {
-        background-color: #64748b;
+        color: var(--color-text-sub);
       }
 
-      /* 날짜 인풋 및 빠른 버튼 */
+      /* Date Input styling */
       .date-input-wrapper {
-        position: relative;
         display: flex;
         flex-direction: column;
         gap: 8px;
@@ -414,31 +541,34 @@
         font-size: 14px;
         font-family: inherit;
         color: var(--color-text-main);
-        background-color: #ffffff;
-        border: 1.5px solid var(--color-border);
-        border-radius: 8px;
+        background-color: var(--color-bg-input);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-md);
         outline: none;
+        transition: background-color 0.25s, color 0.25s, border-color 0.25s;
       }
 
       .date-input:focus {
         border-color: var(--color-border-focus);
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        box-shadow: 0 0 0 3px var(--apple-blue-tint);
       }
 
       .btn-clear-date {
         height: 44px;
-        padding: 0 12px;
+        padding: 0 14px;
         border: 1px solid var(--color-border);
-        background-color: #ffffff;
-        color: var(--color-text-muted);
-        border-radius: 8px;
+        background-color: var(--color-bg-subtle);
+        color: var(--color-text-sub);
+        border-radius: var(--radius-md);
         font-size: 12px;
-        font-weight: 600;
+        font-weight: 500;
         cursor: pointer;
         white-space: nowrap;
+        transition: all 0.15s;
       }
+
       .btn-clear-date:hover {
-        background-color: #f1f5f9;
+        background-color: var(--color-border-hover);
         color: var(--color-text-main);
       }
 
@@ -450,49 +580,64 @@
 
       .date-chip {
         border: 1px solid var(--color-border);
-        background-color: var(--color-bg-page);
+        background-color: var(--color-bg-subtle);
         color: var(--color-text-sub);
-        padding: 4px 10px;
-        border-radius: 6px;
+        padding: 4px 11px;
+        border-radius: 980px;
         font-size: 12px;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.1s;
+        transition: all 0.15s;
       }
+
       .date-chip:hover {
-        background-color: #e2e8f0;
+        background-color: var(--color-border-hover);
         color: var(--color-text-main);
       }
 
-      /* 등록 버튼 */
-      .btn-submit-task {
+      /* Apple Solid Blue Button */
+      .apple-primary-btn {
         width: 100%;
-        height: 48px;
-        background-color: var(--color-primary);
+        height: 46px;
+        background-color: var(--apple-blue);
         color: #ffffff;
         border: none;
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         font-size: 15px;
-        font-weight: 700;
+        font-weight: 600;
+        letter-spacing: -0.01em;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
         cursor: pointer;
-        transition: background-color 0.15s, transform 0.05s, box-shadow 0.15s;
-        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+        transition: background-color 0.15s, transform 0.08s ease;
+        box-shadow: 0 2px 6px rgba(0, 113, 227, 0.2);
       }
 
-      .btn-submit-task:hover {
-        background-color: var(--color-primary-hover);
-        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+      .apple-primary-btn:hover {
+        background-color: var(--apple-blue-hover);
       }
 
-      .btn-submit-task:active {
-        transform: translateY(1px);
+      .apple-primary-btn:active {
+        transform: scale(0.985);
       }
 
-      /* 목록 필터 & 도구 모음 */
+      /* --- 3. Apple Style Task List & Controls --- */
+      .list-section-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+
+      .list-section-title {
+        font-size: 19px;
+        font-weight: 700;
+        color: var(--color-text-main);
+        letter-spacing: -0.02em;
+      }
+
       .list-controls {
         display: flex;
         justify-content: space-between;
@@ -502,11 +647,13 @@
         flex-wrap: wrap;
       }
 
-      .filter-tabs {
+      /* iOS Style Segmented Control for Tabs */
+      .segmented-filter-bar {
         display: flex;
-        background-color: #e2e8f0;
-        padding: 4px;
+        background-color: var(--color-bg-subtle);
+        padding: 3px;
         border-radius: 10px;
+        border: 1px solid var(--color-border);
         gap: 2px;
         overflow-x: auto;
       }
@@ -516,35 +663,35 @@
         background: transparent;
         color: var(--color-text-sub);
         font-size: 13px;
-        font-weight: 600;
-        padding: 8px 14px;
+        font-weight: 500;
+        padding: 6px 14px;
         border-radius: 7px;
         cursor: pointer;
         white-space: nowrap;
-        transition: all 0.15s;
+        transition: all 0.15s ease;
         display: flex;
         align-items: center;
         gap: 6px;
       }
 
       .filter-tab.active {
-        background-color: #ffffff;
-        color: var(--color-primary);
-        box-shadow: var(--shadow-sm);
-        font-weight: 700;
+        background-color: var(--color-bg-card);
+        color: var(--color-text-main);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+        font-weight: 600;
       }
 
       .tab-count {
-        background-color: rgba(0, 0, 0, 0.06);
+        background-color: rgba(118, 118, 128, 0.12);
         color: inherit;
         font-size: 11px;
         padding: 1px 6px;
-        border-radius: 10px;
+        border-radius: 980px;
       }
 
       .filter-tab.active .tab-count {
-        background-color: var(--color-primary-light);
-        color: var(--color-primary);
+        background-color: var(--apple-blue-tint);
+        color: var(--apple-blue);
       }
 
       .secondary-controls {
@@ -559,15 +706,16 @@
       }
 
       .search-input {
-        height: 38px;
+        height: 36px;
         padding: 0 12px 0 32px;
         font-size: 13px;
         border: 1px solid var(--color-border);
-        border-radius: 8px;
-        background-color: #ffffff;
+        border-radius: var(--radius-sm);
+        background-color: var(--color-bg-input);
+        color: var(--color-text-main);
         width: 170px;
         outline: none;
-        transition: width 0.2s, border-color 0.2s;
+        transition: width 0.2s, border-color 0.2s, background-color 0.25s;
       }
 
       .search-input:focus {
@@ -587,96 +735,97 @@
       }
 
       .sort-select {
-        height: 38px;
+        height: 36px;
         padding: 0 10px;
         font-size: 13px;
         font-weight: 500;
         border: 1px solid var(--color-border);
-        border-radius: 8px;
-        background-color: #ffffff;
+        border-radius: var(--radius-sm);
+        background-color: var(--color-bg-input);
         color: var(--color-text-main);
         outline: none;
         cursor: pointer;
+        transition: background-color 0.25s, color 0.25s, border-color 0.25s;
       }
 
-      /* 업무 목록 영역 */
+      /* Task List */
       .task-list {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
       }
 
-      /* 업무 카드 아이템 */
+      /* Apple Reminders Inspired Task Card */
       .task-item {
         background-color: var(--color-bg-card);
         border: 1px solid var(--color-border);
-        border-radius: 10px;
-        padding: 16px 20px;
+        border-radius: var(--radius-md);
+        padding: 14px 18px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
-        box-shadow: var(--shadow-sm);
-        transition: border-color 0.15s, box-shadow 0.15s, background-color 0.15s;
+        gap: 14px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        transition: border-color 0.2s, box-shadow 0.2s, background-color 0.25s;
         animation: fadeIn 0.2s ease;
       }
 
       .task-item:hover {
-        border-color: #cbd5e1;
-        box-shadow: var(--shadow-md);
+        border-color: var(--color-border-hover);
+        box-shadow: var(--shadow-ambient);
       }
 
       .task-item.completed {
-        background-color: #fafbfc;
-        border-color: #e2e8f0;
+        opacity: 0.65;
+        background-color: var(--color-bg-secondary);
       }
 
       .task-left {
         display: flex;
         align-items: flex-start;
-        gap: 14px;
+        gap: 12px;
         flex: 1;
-        min-width: 0; /* 말줄임 & 넘침 방지 핵심 */
+        min-width: 0;
       }
 
-      /* 커스텀 체크박스 */
+      /* Apple Circular Checkbox */
       .checkbox-wrapper {
         position: relative;
-        padding-top: 2px;
+        padding-top: 1px;
         flex-shrink: 0;
       }
 
-      .custom-checkbox {
+      .apple-checkbox {
         appearance: none;
         -webkit-appearance: none;
-        width: 22px;
-        height: 22px;
-        border: 2px solid #cbd5e1;
-        border-radius: 6px;
-        background-color: #ffffff;
+        width: 20px;
+        height: 20px;
+        border: 1.5px solid var(--color-text-muted);
+        border-radius: 50%;
+        background-color: transparent;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.15s ease;
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         outline: none;
       }
 
-      .custom-checkbox:hover {
-        border-color: var(--color-primary);
+      .apple-checkbox:hover {
+        border-color: var(--apple-blue);
       }
 
-      .custom-checkbox:checked {
-        background-color: var(--color-primary);
-        border-color: var(--color-primary);
+      .apple-checkbox:checked {
+        background-color: var(--apple-blue);
+        border-color: var(--apple-blue);
       }
 
-      .custom-checkbox:checked::after {
+      .apple-checkbox:checked::after {
         content: "";
-        width: 6px;
-        height: 10px;
+        width: 5px;
+        height: 9px;
         border: solid #ffffff;
-        border-width: 0 2px 2px 0;
+        border-width: 0 1.5px 1.5px 0;
         transform: rotate(45deg) translate(-1px, -1px);
         display: block;
       }
@@ -687,29 +836,29 @@
       }
 
       .task-title-row {
-        margin-bottom: 6px;
+        margin-bottom: 5px;
       }
 
       .task-title {
         font-size: 15px;
-        font-weight: 600;
+        font-weight: 500;
         color: var(--color-text-main);
         word-break: break-word;
         overflow-wrap: break-word;
-        line-height: 1.45;
+        line-height: 1.4;
+        letter-spacing: -0.01em;
       }
 
       .task-item.completed .task-title {
-        color: var(--color-text-disabled);
+        color: var(--color-text-muted);
         text-decoration: line-through;
-        font-weight: 500;
       }
 
-      /* 뱃지 모음 */
+      /* Apple Badges */
       .task-meta-row {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         flex-wrap: wrap;
       }
 
@@ -718,9 +867,9 @@
         align-items: center;
         gap: 4px;
         font-size: 11px;
-        font-weight: 700;
-        padding: 3px 8px;
-        border-radius: 6px;
+        font-weight: 600;
+        padding: 2px 7px;
+        border-radius: 5px;
         border: 1px solid transparent;
         white-space: nowrap;
       }
@@ -747,20 +896,20 @@
         background-color: var(--status-overdue-bg);
         color: var(--status-overdue-text);
         border-color: var(--status-overdue-border);
-        font-weight: 800;
+        font-weight: 700;
       }
 
       .badge-today {
         background-color: var(--status-today-bg);
         color: var(--status-today-text);
         border-color: var(--status-today-border);
-        font-weight: 800;
+        font-weight: 700;
       }
 
       .badge-upcoming {
-        background-color: #f8fafc;
-        color: #334155;
-        border-color: #cbd5e1;
+        background-color: var(--color-bg-subtle);
+        color: var(--color-text-sub);
+        border-color: var(--color-border);
       }
 
       .badge-completed {
@@ -770,25 +919,25 @@
       }
 
       .badge-nodate {
-        background-color: #f8fafc;
-        color: #94a3b8;
-        border-color: #e2e8f0;
+        background-color: var(--color-bg-subtle);
+        color: var(--color-text-muted);
+        border-color: var(--color-border);
       }
 
-      /* 액션 버튼 */
+      /* Apple Quiet Action Icons */
       .task-actions {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 4px;
         flex-shrink: 0;
       }
 
       .action-btn {
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
         border: 1px solid transparent;
         background-color: transparent;
-        border-radius: 8px;
+        border-radius: var(--radius-sm);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -798,47 +947,125 @@
       }
 
       .action-btn:hover {
-        background-color: #f1f5f9;
+        background-color: var(--color-bg-subtle);
         color: var(--color-text-main);
       }
 
       .action-btn.delete:hover {
-        background-color: #fee2e2;
-        color: #dc2626;
-        border-color: #fca5a5;
+        background-color: var(--priority-high-bg);
+        color: var(--priority-high-text);
       }
 
       .action-btn svg {
-        width: 17px;
-        height: 17px;
+        width: 15px;
+        height: 15px;
       }
 
-      /* 빈 상태 안내 */
+      /* Google Calendar Export Styles */
+      .task-gcal-area {
+        margin-top: 10px;
+        padding-top: 9px;
+        border-top: 1px solid var(--color-separator);
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      .gcal-btn-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .btn-gcal {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 28px;
+        padding: 0 11px;
+        border-radius: 980px;
+        font-size: 11px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        border: 1px solid var(--apple-blue-tint-active);
+        background-color: var(--apple-blue-tint);
+        color: var(--apple-blue);
+        user-select: none;
+      }
+
+      .btn-gcal:hover {
+        background-color: var(--apple-blue-tint-active);
+        transform: translateY(-0.5px);
+      }
+
+      .btn-gcal:active {
+        transform: scale(0.97);
+      }
+
+      .btn-gcal.disabled {
+        opacity: 0.55;
+        background-color: var(--color-bg-subtle);
+        color: var(--color-text-muted);
+        border-color: var(--color-border);
+        cursor: not-allowed;
+      }
+
+      .gcal-icon {
+        width: 13px;
+        height: 13px;
+        flex-shrink: 0;
+      }
+
+      .gcal-notice-text {
+        font-size: 11px;
+        color: var(--color-text-muted);
+        line-height: 1.4;
+        letter-spacing: -0.01em;
+      }
+
+      .gcal-notice-text strong {
+        color: var(--color-text-sub);
+        font-weight: 600;
+      }
+
+      .gcal-notice-disabled {
+        color: var(--color-text-muted);
+      }
+
+      /* Empty State */
       .empty-state {
         background-color: var(--color-bg-card);
-        border: 2px dashed var(--color-border);
-        border-radius: var(--radius);
+        border: 1px dashed var(--color-border);
+        border-radius: var(--radius-xl);
         padding: 48px 24px;
         text-align: center;
         margin-top: 8px;
+        transition: background-color 0.3s, border-color 0.3s;
       }
 
       .empty-icon {
-        width: 60px;
-        height: 60px;
-        margin: 0 auto 16px auto;
-        background-color: var(--color-primary-light);
+        width: 56px;
+        height: 56px;
+        margin: 0 auto 14px auto;
+        background-color: var(--apple-blue-tint);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: var(--color-primary);
-        font-size: 28px;
+        color: var(--apple-blue);
+      }
+
+      .empty-icon svg {
+        width: 26px;
+        height: 26px;
       }
 
       .empty-title {
         font-size: 17px;
-        font-weight: 700;
+        font-weight: 600;
         color: var(--color-text-main);
         margin-bottom: 6px;
       }
@@ -855,21 +1082,22 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 8px 16px;
-        background-color: var(--color-primary-light);
-        color: var(--color-primary);
-        border: 1px solid var(--color-primary-border);
-        border-radius: 6px;
+        padding: 8px 18px;
+        background-color: var(--apple-blue-tint);
+        color: var(--apple-blue);
+        border: 1px solid transparent;
+        border-radius: 980px;
         font-size: 13px;
         font-weight: 600;
         cursor: pointer;
+        transition: background-color 0.15s;
       }
 
       .btn-empty-action:hover {
-        background-color: #dbeafe;
+        background-color: var(--apple-blue-tint-active);
       }
 
-      /* 토스트 알림 (저장 성공/실패 등) */
+      /* Apple Floating Banner / Toast */
       .toast-container {
         position: fixed;
         bottom: 24px;
@@ -882,38 +1110,42 @@
       }
 
       .toast {
-        background-color: #1e293b;
+        background-color: rgba(28, 28, 30, 0.92);
         color: #ffffff;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         padding: 12px 18px;
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         font-size: 13px;
         font-weight: 500;
         display: flex;
         align-items: center;
         gap: 10px;
-        box-shadow: var(--shadow-lg);
-        animation: slideUp 0.25s ease;
+        box-shadow: var(--shadow-elevated);
+        animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         pointer-events: auto;
         max-width: 360px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
       }
 
       .toast.error {
-        background-color: #b91c1c;
+        background-color: rgba(215, 0, 21, 0.92);
       }
 
       .toast.warning {
-        background-color: #c2410c;
+        background-color: rgba(201, 52, 0, 0.92);
       }
 
-      /* 모달 다이얼로그 (수정 및 삭제 확인) */
+      /* Apple Modal Sheet */
       .modal-overlay {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(15, 23, 42, 0.45);
-        backdrop-filter: blur(2px);
+        background-color: rgba(0, 0, 0, 0.38);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         display: none;
         align-items: center;
         justify-content: center;
@@ -927,40 +1159,44 @@
       }
 
       .modal-card {
-        background-color: #ffffff;
-        border-radius: var(--radius);
+        background-color: var(--color-bg-card);
+        border-radius: var(--radius-xl);
         width: 100%;
-        max-width: 500px;
-        box-shadow: var(--shadow-lg);
+        max-width: 480px;
+        box-shadow: var(--shadow-elevated);
         border: 1px solid var(--color-border);
-        padding: 24px;
-        animation: zoomIn 0.2s ease;
+        padding: 26px 28px;
+        animation: zoomIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
       .modal-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 18px;
+        margin-bottom: 20px;
       }
 
       .modal-title {
         font-size: 18px;
         font-weight: 700;
         color: var(--color-text-main);
+        letter-spacing: -0.015em;
       }
 
       .modal-close-btn {
         background: transparent;
         border: none;
-        font-size: 20px;
+        font-size: 18px;
         color: var(--color-text-muted);
         cursor: pointer;
-        padding: 4px;
-        border-radius: 6px;
+        padding: 6px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .modal-close-btn:hover {
-        background-color: #f1f5f9;
+        background-color: var(--color-bg-subtle);
         color: var(--color-text-main);
       }
 
@@ -975,51 +1211,53 @@
       }
 
       .btn-secondary {
-        height: 42px;
+        height: 40px;
         padding: 0 16px;
-        background-color: #f1f5f9;
+        background-color: var(--color-bg-subtle);
         color: var(--color-text-main);
         border: 1px solid var(--color-border);
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         font-size: 14px;
-        font-weight: 600;
+        font-weight: 500;
         cursor: pointer;
+        transition: all 0.15s;
       }
       .btn-secondary:hover {
-        background-color: #e2e8f0;
+        background-color: var(--color-border-hover);
       }
 
       .btn-primary {
-        height: 42px;
+        height: 40px;
         padding: 0 18px;
-        background-color: var(--color-primary);
+        background-color: var(--apple-blue);
         color: #ffffff;
         border: none;
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         font-size: 14px;
         font-weight: 600;
         cursor: pointer;
+        transition: background-color 0.15s;
       }
       .btn-primary:hover {
-        background-color: var(--color-primary-hover);
+        background-color: var(--apple-blue-hover);
       }
 
       .btn-danger {
-        height: 42px;
+        height: 40px;
         padding: 0 18px;
-        background-color: #dc2626;
+        background-color: var(--apple-red);
         color: #ffffff;
         border: none;
-        border-radius: 8px;
+        border-radius: var(--radius-md);
         font-size: 14px;
         font-weight: 600;
         cursor: pointer;
+        transition: filter 0.15s;
       }
       .btn-danger:hover {
-        background-color: #b91c1c;
+        filter: brightness(0.92);
       }
 
-      /* 애니메이션 */
       @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
@@ -1035,21 +1273,21 @@
         to { opacity: 1; transform: translateY(0); }
       }
 
-      /* 반응형 세부 조정 */
       @media (max-width: 640px) {
         body {
-          padding: 14px 10px 40px 10px;
+          padding: 16px 12px 60px 12px;
         }
         .app-header, .task-form-card {
-          padding: 18px 16px;
+          padding: 20px 18px;
         }
         .header-title-row {
           flex-direction: column;
           align-items: flex-start;
           gap: 12px;
         }
-        .task-item {
-          padding: 14px 14px;
+        .header-actions {
+          width: 100%;
+          justify-content: space-between;
         }
         .secondary-controls {
           width: 100%;
@@ -1063,7 +1301,7 @@
         .sort-select {
           width: 100%;
         }
-        .filter-tabs {
+        .segmented-filter-bar {
           width: 100%;
         }
       }
@@ -1071,29 +1309,43 @@
   </head>
   <body>
     <div class="app-container">
-      <!-- 1. 앱 헤더 및 정보 -->
+      <!-- 1. Apple Style Header -->
       <header class="app-header">
         <div class="header-title-row">
           <div class="brand">
-            <div class="brand-icon">✓</div>
+            <div class="brand-icon">
+              <!-- Apple Reminders 스타일 체크 아이콘 -->
+              <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
             <div class="brand-text">
               <h1>내 업무 플래너</h1>
-              <p>개인 업무 등록 및 마감일·완료 상태를 관리하는 한 화면 플래너</p>
+              <p>개인 업무 및 마감일 관리</p>
             </div>
           </div>
-          <!-- 저장 안내 뱃지 (필수 조건) -->
-          <div class="sync-notice-pill" title="브라우저 로컬 저장소(localStorage)에 안전하게 보관됩니다.">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>이 브라우저에 저장되며 다른 기기와 자동 동기화되지 않습니다</span>
+
+          <div class="header-actions">
+            <!-- 다크 모드 토글 (Apple Pill Button) -->
+            <button type="button" class="apple-toggle-btn" id="themeToggleBtn" aria-label="다크 모드로 전환" title="다크 모드 / 라이트 모드 전환">
+              <span class="icon" id="themeIcon">🌙</span>
+              <span id="themeLabel">다크 모드</span>
+            </button>
+
+            <!-- 동기화 안내 배너 (Apple Callout) -->
+            <div class="sync-notice-pill" title="브라우저 로컬 저장소(localStorage)에 안전하게 보관됩니다.">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>이 브라우저에 저장되며 다른 기기와 자동 동기화되지 않습니다</span>
+            </div>
           </div>
         </div>
 
-        <!-- 업무 통계 및 진행률 -->
+        <!-- Apple Style Stats Bar -->
         <div class="stats-bar">
           <div class="stat-card">
-            <span class="stat-label">전체 업무</span>
+            <span class="stat-label">전체</span>
             <span class="stat-value" id="statTotal">0</span>
           </div>
           <div class="stat-card">
@@ -1101,7 +1353,7 @@
             <span class="stat-value" id="statPending">0</span>
           </div>
           <div class="stat-card urgent">
-            <span class="stat-label">오늘 마감 / 지연</span>
+            <span class="stat-label">오늘 마감 · 지연</span>
             <span class="stat-value" id="statUrgent">0</span>
           </div>
           <div class="stat-card completed">
@@ -1112,7 +1364,7 @@
 
         <div class="progress-container">
           <div class="progress-meta">
-            <span>업무 달성률</span>
+            <span>진행률</span>
             <span id="progressPercent">0%</span>
           </div>
           <div class="progress-track">
@@ -1121,10 +1373,10 @@
         </div>
       </header>
 
-      <!-- 2. 신규 업무 등록 카드 (입력창과 목록 분리) -->
+      <!-- 2. 신규 업무 등록 카드 -->
       <section class="task-form-card" aria-labelledby="formHeading">
         <div class="form-title" id="formHeading">
-          <span>새로운 업무 등록</span>
+          <span>새 업무 추가</span>
           <span class="form-title-badge">신규</span>
         </div>
 
@@ -1137,25 +1389,24 @@
             type="text"
             id="taskTitleInput"
             class="text-input"
-            placeholder="업무명을 입력하세요 (예: 2분기 사업보고서 작성 및 피드백)"
+            placeholder="업무명을 입력하세요 (예: 2분기 전략 기획서 작성)"
             autocomplete="off"
             maxlength="200"
           />
           <!-- 공백 및 누락 시 표시되는 이유 안내 문구 (필수 조건) -->
           <div class="form-error-message" id="titleError">
-            <svg width="15" height="15" fill="currentColor" viewBox="0 0 20 20">
+            <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
             </svg>
             <span id="titleErrorText">업무명을 입력해주세요. 공백만으로는 등록할 수 없습니다.</span>
           </div>
         </div>
 
-        <!-- 2분할 행: 우선순위 선택 & 마감일 선택 -->
+        <!-- 2분할 행: 우선순위 세그먼트 컨트롤 & 마감일 -->
         <div class="form-row">
-          <!-- 우선순위 선택 (색상과 글자로 함께 표시, 기본값 보통) -->
           <div class="input-group" style="margin-bottom: 0;">
-            <label class="input-label">우선순위 선택</label>
-            <div class="priority-options" role="radiogroup" aria-label="업무 우선순위">
+            <label class="input-label">우선순위</label>
+            <div class="apple-segmented-group" role="radiogroup" aria-label="업무 우선순위">
               <button type="button" class="priority-option-btn" data-value="high" role="radio" aria-checked="false">
                 <span class="dot"></span>
                 <span>높음</span>
@@ -1171,7 +1422,6 @@
             </div>
           </div>
 
-          <!-- 마감일 선택 (선택사항, 없으면 '마감일 없음') -->
           <div class="input-group" style="margin-bottom: 0;">
             <label for="taskDueDateInput" class="input-label">
               마감일 <span style="font-size: 11px; font-weight: normal; color: var(--color-text-muted);">(선택사항)</span>
@@ -1192,24 +1442,24 @@
           </div>
         </div>
 
-        <!-- 등록 버튼 -->
-        <button type="button" class="btn-submit-task" id="btnAddTask">
-          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- 등록 버튼 (Apple Blue Pill Button) -->
+        <button type="button" class="apple-primary-btn" id="btnAddTask">
+          <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
           </svg>
-          <span>업무 등록하기</span>
+          <span>업무 등록</span>
         </button>
       </section>
 
-      <!-- 3. 업무 목록 및 필터 컨트롤 -->
+      <!-- 3. 업무 목록 및 세그먼트 필터 컨트롤 -->
       <section aria-labelledby="listHeading">
-        <h2 id="listHeading" style="font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--color-text-main);">
-          내 업무 목록
-        </h2>
+        <div class="list-section-header">
+          <h2 id="listHeading" class="list-section-title">업무 목록</h2>
+        </div>
 
         <div class="list-controls">
-          <!-- 필터 탭 -->
-          <div class="filter-tabs" role="tablist">
+          <!-- iOS 세그먼트 컨트롤 스타일 필터 바 -->
+          <div class="segmented-filter-bar" role="tablist">
             <button class="filter-tab active" data-filter="all">
               <span>전체</span>
               <span class="tab-count" id="countAll">0</span>
@@ -1228,7 +1478,7 @@
             </button>
           </div>
 
-          <!-- 보조 컨트롤: 검색창 & 정렬 선택 -->
+          <!-- 검색 & 정렬 -->
           <div class="secondary-controls">
             <div class="search-input-wrap">
               <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1246,34 +1496,38 @@
           </div>
         </div>
 
-        <!-- 실제 업무 카드들이 렌더링되는 컨테이너 -->
+        <!-- 업무 카드 컨테이너 -->
         <div class="task-list" id="taskListContainer" role="list">
-          <!-- 자바스크립트로 렌더링 -->
+          <!-- JS Render -->
         </div>
 
-        <!-- 업무가 없을 때 시작 안내 (Empty State) -->
+        <!-- 빈 상태 안내 (Apple Minimalist Empty State) -->
         <div class="empty-state" id="emptyState" style="display: none;">
-          <div class="empty-icon">📝</div>
+          <div class="empty-icon">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+          </div>
           <div class="empty-title" id="emptyTitle">등록된 업무가 없습니다</div>
           <p class="empty-desc" id="emptyDesc">
             상단 입력창에서 오늘 진행할 업무를 등록해 보세요.<br />
-            마감일과 우선순위를 설정하면 더욱 체계적으로 관리할 수 있습니다.
+            마감일과 우선순위를 지정해 계획적으로 완수할 수 있습니다.
           </p>
           <button type="button" class="btn-empty-action" id="btnFocusInput">
-            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
             </svg>
-            <span>첫 업무 등록하러 가기</span>
+            <span>첫 업무 등록하기</span>
           </button>
         </div>
       </section>
     </div>
 
-    <!-- 수정 모달 -->
+    <!-- 수정 모달 (Apple Sheet Style) -->
     <div class="modal-overlay" id="editModal" role="dialog" aria-modal="true" aria-labelledby="editModalTitle">
       <div class="modal-card">
         <div class="modal-header">
-          <h3 class="modal-title" id="editModalTitle">업무 내용 수정</h3>
+          <h3 class="modal-title" id="editModalTitle">업무 수정</h3>
           <button type="button" class="modal-close-btn" id="btnCloseEditModal" aria-label="닫기">✕</button>
         </div>
         <div class="modal-body">
@@ -1287,7 +1541,7 @@
 
           <div class="input-group">
             <label class="input-label">우선순위</label>
-            <div class="priority-options" id="editPriorityOptions">
+            <div class="apple-segmented-group" id="editPriorityOptions">
               <button type="button" class="priority-option-btn" data-value="high">
                 <span class="dot"></span>
                 <span>높음</span>
@@ -1318,18 +1572,18 @@
       </div>
     </div>
 
-    <!-- 삭제 확인 모달 (선택한 항목만 안전하게 삭제) -->
+    <!-- 삭제 확인 모달 -->
     <div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
       <div class="modal-card" style="max-width: 420px;">
         <div class="modal-header">
-          <h3 class="modal-title" id="deleteModalTitle" style="color: #dc2626;">업무 삭제 확인</h3>
+          <h3 class="modal-title" id="deleteModalTitle" style="color: var(--apple-red);">업무 삭제</h3>
           <button type="button" class="modal-close-btn" id="btnCloseDeleteModal" aria-label="닫기">✕</button>
         </div>
         <div class="modal-body">
           <p style="font-size: 14px; color: var(--color-text-main); margin-bottom: 8px;">
-            선택한 아래 업무를 정말로 삭제하시겠습니까?
+            선택한 아래 업무를 목록에서 삭제하시겠습니까?
           </p>
-          <p id="deleteTaskTitlePreview" style="font-size: 14px; font-weight: 700; color: #1e293b; background: #f8fafc; padding: 10px 14px; border-radius: 6px; border: 1px solid #e2e8f0; word-break: break-all;">
+          <p id="deleteTaskTitlePreview" style="font-size: 14px; font-weight: 600; color: var(--color-text-main); background: var(--color-bg-subtle); padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--color-border); word-break: break-all;">
           </p>
           <p style="font-size: 12px; color: var(--color-text-muted); margin-top: 8px;">
             삭제 후에는 이 브라우저에서 복구할 수 없습니다.
@@ -1337,32 +1591,34 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn-secondary" id="btnCancelDelete">취소</button>
-          <button type="button" class="btn-danger" id="btnConfirmDelete">삭제하기</button>
+          <button type="button" class="btn-danger" id="btnConfirmDelete">삭제</button>
         </div>
       </div>
     </div>
 
-    <!-- 토스트 알림 컨테이너 -->
+    <!-- 토스트 알림 -->
     <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
-    <!-- 4. 순수 자바스크립트 로직 (외부 의존성 없음, 파일 단독 실행 지원) -->
+    <!-- 4. 순수 자바스크립트 로직 (파일 단독 실행 보장) -->
     <script>
       (function() {
         'use strict';
 
-        // 로컬 스토리지 키
         var STORAGE_KEY = 'my_work_planner_tasks_v1';
+        var THEME_KEY = 'my_work_planner_theme_mode';
 
-        // 상태 변수
         var tasks = [];
         var currentFilter = 'all';
         var currentSearch = '';
         var currentSort = 'created-desc';
-        var selectedPriority = 'medium'; // 기본값 보통
+        var selectedPriority = 'medium';
         var editingTaskId = null;
         var deletingTaskId = null;
 
-        // DOM 요소 캐싱
+        var themeToggleBtn = document.getElementById('themeToggleBtn');
+        var themeIcon = document.getElementById('themeIcon');
+        var themeLabel = document.getElementById('themeLabel');
+
         var titleInput = document.getElementById('taskTitleInput');
         var dueDateInput = document.getElementById('taskDueDateInput');
         var btnClearDate = document.getElementById('btnClearDate');
@@ -1375,7 +1631,6 @@
         var emptyDesc = document.getElementById('emptyDesc');
         var btnFocusInput = document.getElementById('btnFocusInput');
 
-        // 통계 DOM
         var statTotal = document.getElementById('statTotal');
         var statPending = document.getElementById('statPending');
         var statUrgent = document.getElementById('statUrgent');
@@ -1383,7 +1638,6 @@
         var progressBar = document.getElementById('progressBar');
         var progressPercent = document.getElementById('progressPercent');
 
-        // 탭 카운트 DOM
         var countAll = document.getElementById('countAll');
         var countPending = document.getElementById('countPending');
         var countUrgent = document.getElementById('countUrgent');
@@ -1393,7 +1647,6 @@
         var searchInput = document.getElementById('searchInput');
         var sortSelect = document.getElementById('sortSelect');
 
-        // 모달 DOM
         var editModal = document.getElementById('editModal');
         var editTaskTitle = document.getElementById('editTaskTitle');
         var editTaskDueDate = document.getElementById('editTaskDueDate');
@@ -1411,9 +1664,55 @@
 
         var toastContainer = document.getElementById('toastContainer');
 
-        /* -------------------------------------------------------------
-           날짜 계산 유틸리티 (사용자 로컬 타임존 기준 엄격 적용)
-           ------------------------------------------------------------- */
+        /* 테마 관리 */
+        function applyTheme(isDark, save) {
+          if (isDark) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.body.classList.add('dark-mode');
+            themeIcon.textContent = '☀️';
+            themeLabel.textContent = '라이트 모드';
+            themeToggleBtn.setAttribute('aria-label', '라이트 모드로 전환');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+            document.body.classList.remove('dark-mode');
+            themeIcon.textContent = '🌙';
+            themeLabel.textContent = '다크 모드';
+            themeToggleBtn.setAttribute('aria-label', '다크 모드로 전환');
+          }
+
+          if (save) {
+            try {
+              localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+            } catch (e) {
+              console.error('테마 설정 저장 오류:', e);
+            }
+          }
+        }
+
+        function initTheme() {
+          var savedTheme = null;
+          try {
+            savedTheme = localStorage.getItem(THEME_KEY);
+          } catch (e) {}
+
+          if (savedTheme === 'dark') {
+            applyTheme(true, false);
+          } else if (savedTheme === 'light') {
+            applyTheme(false, false);
+          } else {
+            var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyTheme(prefersDark, false);
+          }
+
+          themeToggleBtn.addEventListener('click', function() {
+            var isCurrentDark = document.body.classList.contains('dark-mode') || document.documentElement.getAttribute('data-theme') === 'dark';
+            var nextDark = !isCurrentDark;
+            applyTheme(nextDark, true);
+            showToast(nextDark ? '다크 모드가 적용되었습니다.' : '라이트 모드가 적용되었습니다.', 'info');
+          });
+        }
+
+        /* 날짜 유틸리티 */
         function getLocalTodayStr() {
           var now = new Date();
           var year = now.getFullYear();
@@ -1429,7 +1728,6 @@
           return parts[0] + '.' + parts[1] + '.' + parts[2];
         }
 
-        // D-day 계산 함수
         function getDaysDiff(targetDateStr, baseDateStr) {
           var target = new Date(targetDateStr + 'T00:00:00');
           var base = new Date(baseDateStr + 'T00:00:00');
@@ -1438,13 +1736,51 @@
         }
 
         /* -------------------------------------------------------------
-           업무 상태 계산 규칙 (사용자 요청 명세 준수):
-           - 사용자의 로컬 날짜를 기준으로 비교
-           - 오늘 이전 날짜의 미완료 업무에만 '기한 지남'
-           - 오늘 날짜의 미완료 업무는 '오늘 마감'
-           - 오늘을 기한 지남으로 표시하지 마 (엄격)
-           - 완료된 업무는 기한 지남 표시에서 제외 (엄격)
+           Google 캘린더 연동 유틸리티
+           - action=TEMPLATE
+           - text: 업무명
+           - details: 우선순위 및 '업무 플래너에서 추가한 일정' 설명
+           - dates: 종일 일정 YYYYMMDD/YYYYMMDD (종료일은 마감일 다음 날, 배타적)
+           - 월말·연말 및 윤년 올바르게 다음 날 계산
+           - URLSearchParams로 한글·공백·특수문자 인코딩
+           - rel="noopener noreferrer" 적용
            ------------------------------------------------------------- */
+        function getGoogleCalendarDates(dueDateStr) {
+          var parts = dueDateStr.split('-');
+          var y = parseInt(parts[0], 10);
+          var m = parseInt(parts[1], 10) - 1;
+          var d = parseInt(parts[2], 10);
+
+          var start = new Date(y, m, d);
+          var next = new Date(y, m, d + 1); // JS Date handles month/year roll-over cleanly
+
+          function pad(n) { return (n < 10 ? '0' : '') + n; }
+          var startStr = '' + start.getFullYear() + pad(start.getMonth() + 1) + pad(start.getDate());
+          var nextStr = '' + next.getFullYear() + pad(next.getMonth() + 1) + pad(next.getDate());
+
+          return startStr + '/' + nextStr;
+        }
+
+        function buildGoogleCalendarUrl(task) {
+          if (!task.dueDate) return null;
+          var datesStr = getGoogleCalendarDates(task.dueDate);
+          var priorityKorean = task.priority === 'high' ? '높음' : (task.priority === 'low' ? '낮음' : '보통');
+          var details = '우선순위: ' + priorityKorean + '\n\n' +
+            '업무 플래너에서 추가한 일정입니다.\n' +
+            '* Google 캘린더에서 확인 후 저장하세요.\n' +
+            '* 이후 변경은 자동 동기화되지 않습니다.\n' +
+            '* 중복 저장 여부는 자동으로 판단할 수 없습니다.';
+
+          var params = new URLSearchParams();
+          params.set('action', 'TEMPLATE');
+          params.set('text', task.title);
+          params.set('details', details);
+          params.set('dates', datesStr);
+
+          return 'https://calendar.google.com/calendar/r/eventedit?' + params.toString();
+        }
+
+        /* 업무 상태 계산 */
         function getTaskStatusInfo(task, todayStr) {
           if (task.completed) {
             return {
@@ -1483,7 +1819,6 @@
             };
           }
 
-          // 미래 마감일
           var daysLeft = getDaysDiff(task.dueDate, todayStr);
           return {
             type: 'upcoming',
@@ -1505,9 +1840,7 @@
           }
         }
 
-        /* -------------------------------------------------------------
-           토스트 알림
-           ------------------------------------------------------------- */
+        /* 토스트 */
         function showToast(message, type) {
           type = type || 'info';
           var toast = document.createElement('div');
@@ -1516,7 +1849,7 @@
 
           toastContainer.appendChild(toast);
           setTimeout(function() {
-            toast.style.transition = 'opacity 0.3s, transform 0.3s';
+            toast.style.transition = 'opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
             toast.style.opacity = '0';
             toast.style.transform = 'translateY(10px)';
             setTimeout(function() {
@@ -1527,12 +1860,7 @@
           }, 3200);
         }
 
-        /* -------------------------------------------------------------
-           로컬 스토리지 저장 및 불러오기 (에러 핸들링 포함)
-           - 등록·변경·완료·삭제 직후 저장
-           - 저장 실패 감지 시 안내 문구
-           - 샘플 데이터 반복 추가 방지 (초기 빈 목록)
-           ------------------------------------------------------------- */
+        /* 로컬 저장소 */
         function saveTasksToStorage() {
           try {
             var data = JSON.stringify(tasks);
@@ -1549,7 +1877,6 @@
           try {
             var raw = localStorage.getItem(STORAGE_KEY);
             if (!raw) {
-              // 처음에는 빈 목록으로 시작
               tasks = [];
               return;
             }
@@ -1566,20 +1893,14 @@
           }
         }
 
-        /* -------------------------------------------------------------
-           고유 ID 생성 (다른 항목이 사라지지 않도록 고유 ID 사용)
-           ------------------------------------------------------------- */
         function generateUniqueId() {
           return 'task_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 9);
         }
 
-        /* -------------------------------------------------------------
-           화면 렌더링 (통계, 뱃지, 목록, 필터링, 정렬)
-           ------------------------------------------------------------- */
+        /* 렌더링 */
         function render() {
           var todayStr = getLocalTodayStr();
 
-          // 1. 전체 통계 계산
           var totalCount = tasks.length;
           var completedCount = 0;
           var urgentCount = 0;
@@ -1597,7 +1918,6 @@
           var pendingCount = totalCount - completedCount;
           var rate = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
 
-          // 통계 DOM 갱신
           statTotal.textContent = totalCount;
           statPending.textContent = pendingCount;
           statUrgent.textContent = urgentCount;
@@ -1605,15 +1925,12 @@
           progressBar.style.width = rate + '%';
           progressPercent.textContent = rate + '%';
 
-          // 탭 숫자 갱신
           countAll.textContent = totalCount;
           countPending.textContent = pendingCount;
           countUrgent.textContent = urgentCount;
           countCompleted.textContent = completedCount;
 
-          // 2. 목록 필터링
           var filtered = tasks.filter(function(t) {
-            // 탭 필터
             if (currentFilter === 'pending' && t.completed) return false;
             if (currentFilter === 'completed' && !t.completed) return false;
             if (currentFilter === 'urgent') {
@@ -1621,7 +1938,6 @@
               if (!t.dueDate || t.dueDate > todayStr) return false;
             }
 
-            // 검색어 필터
             if (currentSearch.trim() !== '') {
               var q = currentSearch.toLowerCase().trim();
               if (t.title.toLowerCase().indexOf(q) === -1) {
@@ -1631,7 +1947,6 @@
             return true;
           });
 
-          // 3. 목록 정렬
           var sorted = filtered.slice().sort(function(a, b) {
             if (currentSort === 'created-desc') {
               return b.createdAt - a.createdAt;
@@ -1643,7 +1958,6 @@
               return b.createdAt - a.createdAt;
             }
             if (currentSort === 'due-asc') {
-              // 마감일 없는 항목은 맨 뒤로
               if (!a.dueDate && !b.dueDate) return b.createdAt - a.createdAt;
               if (!a.dueDate) return 1;
               if (!b.dueDate) return -1;
@@ -1658,17 +1972,14 @@
             return 0;
           });
 
-          // 4. 리스트 DOM 렌더링
           taskListContainer.innerHTML = '';
 
           if (tasks.length === 0) {
-            // 처음 또는 모든 업무 삭제 시
             emptyState.style.display = 'block';
             emptyTitle.textContent = '등록된 업무가 없습니다';
-            emptyDesc.innerHTML = '상단 입력창에서 오늘 진행할 업무를 등록해 보세요.<br />마감일과 우선순위를 설정하면 더욱 체계적으로 관리할 수 있습니다.';
+            emptyDesc.innerHTML = '상단 입력창에서 오늘 진행할 업무를 등록해 보세요.<br />마감일과 우선순위를 지정해 계획적으로 완수할 수 있습니다.';
             btnFocusInput.style.display = 'inline-flex';
           } else if (sorted.length === 0) {
-            // 검색/필터 결과가 없을 때
             emptyState.style.display = 'block';
             emptyTitle.textContent = '해당 조건의 업무가 없습니다';
             emptyDesc.textContent = '선택한 필터나 검색어에 일치하는 업무가 없습니다.';
@@ -1687,7 +1998,7 @@
               var itemHTML = '';
               itemHTML += '<div class="task-left">';
               itemHTML += '  <div class="checkbox-wrapper">';
-              itemHTML += '    <input type="checkbox" class="custom-checkbox task-check-btn" ' + (task.completed ? 'checked' : '') + ' aria-label="' + escapeHTML(task.title) + ' 완료 여부 토글" />';
+              itemHTML += '    <input type="checkbox" class="apple-checkbox task-check-btn" ' + (task.completed ? 'checked' : '') + ' aria-label="' + escapeHTML(task.title) + ' 완료 여부 토글" />';
               itemHTML += '  </div>';
               itemHTML += '  <div class="task-content">';
               itemHTML += '    <div class="task-title-row">';
@@ -1695,26 +2006,53 @@
               itemHTML += '    </div>';
               itemHTML += '    <div class="task-meta-row">';
 
-              // 우선순위 뱃지 (색상과 글자 함께 표시)
               itemHTML += '      <span class="badge ' + priorityInfo.className + '">';
               itemHTML += '        <span>' + priorityInfo.icon + '</span>';
               itemHTML += '        <span>' + priorityInfo.label + '</span>';
               itemHTML += '      </span>';
 
-              // 상태 및 마감일 뱃지
               itemHTML += '      <span class="badge ' + statusInfo.badgeClass + '">';
               itemHTML += '        <span>' + escapeHTML(statusInfo.label) + '</span>';
               itemHTML += '      </span>';
 
               if (task.completed && task.dueDate) {
-                itemHTML += '    <span style="font-size: 11px; color: var(--color-text-disabled);">(마감일: ' + formatDisplayDate(task.dueDate) + ')</span>';
+                itemHTML += '    <span style="font-size: 11px; color: var(--color-text-muted);">(마감일: ' + formatDisplayDate(task.dueDate) + ')</span>';
               }
 
+              itemHTML += '    </div>';
+
+              // Google 캘린더 연동 영역
+              itemHTML += '    <div class="task-gcal-area">';
+              itemHTML += '      <div class="gcal-btn-wrapper">';
+              if (task.dueDate) {
+                var gcalUrl = buildGoogleCalendarUrl(task);
+                itemHTML += '        <a href="' + escapeHTML(gcalUrl) + '" target="_blank" rel="noopener noreferrer" class="btn-gcal gcal-link-btn" title="Google 캘린더에서 새 일정 작성 (새 탭 열기)">';
+                itemHTML += '          <svg class="gcal-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="3" ry="3"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="M12 14v4M10 16h4"></path></svg>';
+                itemHTML += '          <span>Google 캘린더에 추가</span>';
+                itemHTML += '          <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="margin-left: -2px;"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>';
+                itemHTML += '        </a>';
+              } else {
+                itemHTML += '        <button type="button" class="btn-gcal disabled gcal-disabled-btn" title="마감일을 먼저 설정해 주세요" aria-disabled="true">';
+                itemHTML += '          <svg class="gcal-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="3" ry="3"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
+                itemHTML += '          <span>Google 캘린더에 추가</span>';
+                itemHTML += '        </button>';
+              }
+              itemHTML += '      </div>';
+
+              // 안내 문구 (요청 명세: 제목·우선순위 전달 안내, 직접 저장 안내, 자동동기화 불가, 중복판단 불가)
+              if (task.dueDate) {
+                itemHTML += '      <p class="gcal-notice-text">';
+                itemHTML += '        제목과 우선순위가 Google로 전달됩니다. <strong>Google 캘린더에서 확인 후 저장하세요.</strong> (이후 변경은 자동 동기화되지 않으며, 중복 저장 여부는 자동으로 판단할 수 없습니다)';
+                itemHTML += '      </p>';
+              } else {
+                itemHTML += '      <p class="gcal-notice-text gcal-notice-disabled">';
+                itemHTML += '        ⚠️ 마감일을 먼저 설정해 주세요 (마감일이 지정된 업무만 Google 캘린더에 추가할 수 있습니다)';
+                itemHTML += '      </p>';
+              }
               itemHTML += '    </div>';
               itemHTML += '  </div>';
               itemHTML += '</div>';
 
-              // 액션 버튼 (수정, 삭제)
               itemHTML += '<div class="task-actions">';
               itemHTML += '  <button type="button" class="action-btn edit-task-btn" title="업무 수정" aria-label="수정">';
               itemHTML += '    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>';
@@ -1726,7 +2064,6 @@
 
               itemEl.innerHTML = itemHTML;
 
-              // 이벤트 바인딩
               var checkBtn = itemEl.querySelector('.task-check-btn');
               checkBtn.addEventListener('change', function() {
                 toggleTaskCompletion(task.id);
@@ -1742,12 +2079,26 @@
                 openDeleteModal(task.id);
               });
 
+              var gcalLink = itemEl.querySelector('.gcal-link-btn');
+              if (gcalLink) {
+                gcalLink.addEventListener('click', function() {
+                  showToast('Google 캘린더 새 탭이 열렸습니다. 캘린더에서 확인 후 저장하세요. (자동 동기화 및 중복 저장은 자동 판단되지 않습니다)', 'info');
+                });
+              }
+
+              var gcalDisabledBtn = itemEl.querySelector('.gcal-disabled-btn');
+              if (gcalDisabledBtn) {
+                gcalDisabledBtn.addEventListener('click', function(e) {
+                  e.preventDefault();
+                  showToast('마감일을 먼저 설정해 주세요. 업무 수정 버튼으로 마감일을 추가할 수 있습니다.', 'warning');
+                });
+              }
+
               taskListContainer.appendChild(itemEl);
             });
           }
         }
 
-        // HTML 문자열 이스케이프
         function escapeHTML(str) {
           if (!str) return '';
           return str
@@ -1758,15 +2109,11 @@
             .replace(/'/g, '&#039;');
         }
 
-        /* -------------------------------------------------------------
-           업무 등록 핸들러
-           - 공백만 있는 제목은 막고 이유를 안내
-           ------------------------------------------------------------- */
+        /* 업무 등록 */
         function handleAddTask() {
           var titleVal = titleInput.value;
           var trimmed = titleVal.trim();
 
-          // 유효성 검사: 공백만 있거나 비어있을 때 막고 이유 안내
           if (!trimmed) {
             titleInput.classList.add('error');
             titleError.classList.add('active');
@@ -1779,7 +2126,6 @@
             return;
           }
 
-          // 오류 초기화
           titleInput.classList.remove('error');
           titleError.classList.remove('active');
 
@@ -1788,34 +2134,26 @@
           var newTask = {
             id: generateUniqueId(),
             title: trimmed,
-            priority: selectedPriority, // 'high' | 'medium' | 'low'
+            priority: selectedPriority,
             dueDate: dueDateVal,
             completed: false,
             createdAt: Date.now()
           };
 
-          // 목록에 추가
           tasks.unshift(newTask);
 
-          // 등록 직후 저장
           if (saveTasksToStorage()) {
             showToast('새 업무가 등록되었습니다.', 'info');
           }
 
-          // 입력창 초기화
           titleInput.value = '';
           dueDateInput.value = '';
-          setPriority('medium'); // 기본값 보통으로 복원
+          setPriority('medium');
 
           render();
           titleInput.focus();
         }
 
-        /* -------------------------------------------------------------
-           완료 상태 토글 핸들러
-           - 완료 체크와 해제
-           - 직후 저장
-           ------------------------------------------------------------- */
         function toggleTaskCompletion(taskId) {
           var target = tasks.find(function(t) { return t.id === taskId; });
           if (!target) return;
@@ -1833,12 +2171,9 @@
           }
         }
 
-        /* -------------------------------------------------------------
-           우선순위 선택 상태 관리
-           ------------------------------------------------------------- */
         function setPriority(value) {
           selectedPriority = value;
-          var buttons = document.querySelectorAll('.priority-options .priority-option-btn');
+          var buttons = document.querySelectorAll('.apple-segmented-group .priority-option-btn');
           buttons.forEach(function(btn) {
             if (btn.getAttribute('data-value') === value) {
               btn.classList.add('active');
@@ -1850,9 +2185,7 @@
           });
         }
 
-        /* -------------------------------------------------------------
-           업무 수정 모달
-           ------------------------------------------------------------- */
+        /* 수정 모달 */
         function openEditModal(taskId) {
           var target = tasks.find(function(t) { return t.id === taskId; });
           if (!target) return;
@@ -1863,7 +2196,6 @@
           editTitleError.classList.remove('active');
           editTaskTitle.classList.remove('error');
 
-          // 모달 우선순위 셋업
           var editPriorityBtns = document.querySelectorAll('#editPriorityOptions .priority-option-btn');
           editPriorityBtns.forEach(function(btn) {
             if (btn.getAttribute('data-value') === target.priority) {
@@ -1909,9 +2241,7 @@
           render();
         }
 
-        /* -------------------------------------------------------------
-           업무 삭제 모달 (선택한 항목만 안전 삭제)
-           ------------------------------------------------------------- */
+        /* 삭제 모달 */
         function openDeleteModal(taskId) {
           var target = tasks.find(function(t) { return t.id === taskId; });
           if (!target) return;
@@ -1929,7 +2259,6 @@
         function handleConfirmDelete() {
           if (!deletingTaskId) return;
 
-          // 선택한 항목만 필터링하여 삭제
           tasks = tasks.filter(function(t) { return t.id !== deletingTaskId; });
 
           if (saveTasksToStorage()) {
@@ -1940,11 +2269,8 @@
           render();
         }
 
-        /* -------------------------------------------------------------
-           이벤트 리스너 등록
-           ------------------------------------------------------------- */
+        /* 이벤트 리스너 */
         function initEvents() {
-          // 입력창 실시간 오류 해제
           titleInput.addEventListener('input', function() {
             if (titleInput.value.trim().length > 0) {
               titleInput.classList.remove('error');
@@ -1952,7 +2278,6 @@
             }
           });
 
-          // 엔터 키로 등록
           titleInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
               e.preventDefault();
@@ -1960,23 +2285,19 @@
             }
           });
 
-          // 등록 버튼 클릭
           btnAddTask.addEventListener('click', handleAddTask);
 
-          // 우선순위 버튼 선택
-          var priorityButtons = document.querySelectorAll('.priority-options .priority-option-btn');
+          var priorityButtons = document.querySelectorAll('.apple-segmented-group .priority-option-btn');
           priorityButtons.forEach(function(btn) {
             btn.addEventListener('click', function() {
               setPriority(this.getAttribute('data-value'));
             });
           });
 
-          // 날짜 초기화 버튼
           btnClearDate.addEventListener('click', function() {
             dueDateInput.value = '';
           });
 
-          // 빠른 날짜 칩 버튼
           var dateChips = document.querySelectorAll('.date-chip');
           dateChips.forEach(function(chip) {
             chip.addEventListener('click', function() {
@@ -1994,7 +2315,6 @@
             });
           });
 
-          // 필터 탭 클릭
           filterTabs.forEach(function(tab) {
             tab.addEventListener('click', function() {
               filterTabs.forEach(function(t) { t.classList.remove('active'); });
@@ -2004,25 +2324,21 @@
             });
           });
 
-          // 검색 입력
           searchInput.addEventListener('input', function() {
             currentSearch = this.value;
             render();
           });
 
-          // 정렬 선택
           sortSelect.addEventListener('change', function() {
             currentSort = this.value;
             render();
           });
 
-          // 빈 화면에서 입력창 포커스
           btnFocusInput.addEventListener('click', function() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             titleInput.focus();
           });
 
-          // 수정 모달 이벤트
           var editPriorityButtons = document.querySelectorAll('#editPriorityOptions .priority-option-btn');
           editPriorityButtons.forEach(function(btn) {
             btn.addEventListener('click', function() {
@@ -2045,12 +2361,10 @@
             }
           });
 
-          // 삭제 모달 이벤트
           btnCloseDeleteModal.addEventListener('click', closeDeleteModal);
           btnCancelDelete.addEventListener('click', closeDeleteModal);
           btnConfirmDelete.addEventListener('click', handleConfirmDelete);
 
-          // ESC 키로 모달 닫기
           window.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
               if (editModal.classList.contains('active')) closeEditModal();
@@ -2058,7 +2372,6 @@
             }
           });
 
-          // 모달 배경 클릭 시 닫기
           editModal.addEventListener('click', function(e) {
             if (e.target === editModal) closeEditModal();
           });
@@ -2067,9 +2380,7 @@
           });
         }
 
-        /* -------------------------------------------------------------
-           초기 실행
-           ------------------------------------------------------------- */
+        initTheme();
         loadTasksFromStorage();
         initEvents();
         render();
